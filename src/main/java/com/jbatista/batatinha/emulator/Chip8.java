@@ -209,12 +209,12 @@ public class Chip8 extends Service<Short> {
     // opcode methods
     // debug
     private void printOpcode(char arg) {
-        System.out.println(Integer.toHexString(arg).toUpperCase());
+        System.out.println("0x" + Integer.toHexString(arg).toUpperCase());
         programCounter += 2;
     }
 
     private void emptyRegion(char arg) {
-        System.out.println("EMPTY MEMORY ADDRESS REACHED - " + Integer.toHexString(programCounter));
+        System.out.println("EMPTY MEMORY ADDRESS REACHED - 0x" + Integer.toHexString(programCounter));
         cancel();
     }
 
