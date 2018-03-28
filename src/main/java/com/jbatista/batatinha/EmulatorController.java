@@ -4,8 +4,6 @@ import com.jbatista.batatinha.emulator.Chip8;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,21 +12,21 @@ import javafx.scene.control.Label;
 
 public class EmulatorController implements Initializable {
 
-    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
     private Chip8 chip8;
     private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
     private short cpuSpeed = 500;
 
     @FXML
     private Label label;
-    private Canvas screen = new Canvas(32, 64);
+    @FXML
+    private Canvas screen;
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws Exception {
         System.out.println("You clicked me!");
         label.setText("Hello World!");
 
-        chip8 = new Chip8(cpuSpeed, program, screen.getGraphicsContext2D(), executor);
+        chip8 = new Chip8(cpuSpeed, program, screen.getGraphicsContext2D());
         chip8.start();
     }
 
@@ -40,8 +38,7 @@ public class EmulatorController implements Initializable {
     @Override
     protected void finalize() throws Throwable {
         chip8.cancel();
-        executor.shutdownNow();
-        super.finalize(); //To change body of generated methods, choose Tools | Templates.
+        super.finalize();
     }
 
 }

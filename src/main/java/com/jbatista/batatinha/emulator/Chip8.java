@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javafx.concurrent.Service;
@@ -16,6 +16,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Chip8 extends Service<Short> {
 
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
     private final short cpuSpeed;
     private short cycle = 0;
 
@@ -50,9 +51,7 @@ public class Chip8 extends Service<Short> {
     private char stackPointer = 0;
 
     // timers
-    private ScheduledFuture soundTimerFuture;
     private short soundTimer = 0;
-    private ScheduledFuture delayTimerFuture;
     private short delayTimer = 0;
 
     // auxiliary
@@ -61,8 +60,7 @@ public class Chip8 extends Service<Short> {
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
 
-    public Chip8(short cpuSpeed, File program, GraphicsContext screen, ScheduledExecutorService executor) throws Exception {
-        setExecutor(executor);
+    public Chip8(short cpuSpeed, File program, GraphicsContext screen) throws Exception {
         this.cpuSpeed = cpuSpeed;
         this.display = new Display(screen);
 
@@ -134,12 +132,12 @@ public class Chip8 extends Service<Short> {
             @Override
             protected Short call() throws Exception {
                 // 60Hz timer
-                soundTimerFuture = ((ScheduledExecutorService) getExecutor()).scheduleWithFixedDelay(() -> {
+                executor.scheduleWithFixedDelay(() -> {
                     timerTick();
                 }, 1000 / 60, 1000 / 60, TimeUnit.MILLISECONDS);
 
                 // CPU timer
-                delayTimerFuture = ((ScheduledExecutorService) getExecutor()).scheduleWithFixedDelay(() -> {
+                executor.scheduleWithFixedDelay(() -> {
                     cpuTick();
                     updateValue(changeCycle());
                 }, 1000 / cpuSpeed, 1000 / cpuSpeed, TimeUnit.MILLISECONDS);
@@ -164,8 +162,7 @@ public class Chip8 extends Service<Short> {
 
     @Override
     public boolean cancel() {
-        soundTimerFuture.cancel(true);
-        delayTimerFuture.cancel(true);
+        executor.shutdownNow();
         return super.cancel();
     }
 
