@@ -1,33 +1,31 @@
 package com.jbatista.batatinha.emulator;
 
 import com.jbatista.batatinha.emulator.Input.Key;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.canvas.GraphicsContext;
 
-public class Chip8 extends Service<Integer> {
-
-    //child threads
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+public class Chip8 extends Service<Short> {
 
     private final short cpuSpeed;
     private short cycle = 0;
 
-    //CPU, memory, registers, font
+    // CPU, memory, registers, font
     private char opcode = 0;
     private final char[] memory = new char[4096];
     private final char[] v = new char[16];
     private char i = 0;
-    private char programCounter = 0x200;
+    private char programCounter = 512;
+    // hardcoded font
     private final char[] font = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -47,170 +45,105 @@ public class Chip8 extends Service<Integer> {
         0xF0, 0x80, 0xF0, 0x80, 0x80 // F
     };
 
-    //GO TO stack
+    // GO TO stack
     private final char[] stack = new char[16];
     private char stackPointer = 0;
 
-    //timers
+    // timers
+    private ScheduledFuture soundTimerFuture;
     private short soundTimer = 0;
+    private ScheduledFuture delayTimerFuture;
     private short delayTimer = 0;
 
-    //auxiliary
+    // auxiliary
     private final Display display;
     private final Input input = new Input();
-    private final Map<Short, Supplier<Opcode>> opcodesMap = new HashMap<>();
+    private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
 
-    public Chip8(short cpuSpeed, File program, GraphicsContext screen) throws Exception {
+    public Chip8(short cpuSpeed, File program, GraphicsContext screen, ScheduledExecutorService executor) throws Exception {
+        setExecutor(executor);
         this.cpuSpeed = cpuSpeed;
         this.display = new Display(screen);
 
-        //load font
+        Arrays.fill(v, (char) 0);
+        Arrays.fill(stack, (char) 0);
+
+        // load font
         for (int i = 0; i < 80; i++) {
             memory[i] = font[i];
         }
 
-        //load program
-        final BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(program), 512);
+        // load program
+        final FileInputStream fileInputStream = new FileInputStream(program);
         int data;
         int index = 0;
-        while ((data = bufferedInputStream.read()) != -1) {
+        while ((data = fileInputStream.read()) != -1) {
             memory[index + 512] = (char) data;
             index++;
         }
-        bufferedInputStream.close();
-        //<editor-fold defaultstate="collapsed" desc="opcodes list, converted to short because java doesnt support unsigned numbers, double click to expand (Netbeans)">
-        // empty address
-        opcodesMap.put((short) -4096, () -> (arg) -> {
-            System.out.println("EMPTY MEMORY ADDRESS REACHED - " + Integer.toHexString(programCounter));
-            executor.shutdownNow();
-        });
+        fileInputStream.close();
 
-        // 0000
-        opcodesMap.put((short) 0, () -> this::printOpcode);
+        // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
+        // debug
+        opcodesMap.put((char) 0xF000, this::emptyRegion);
 
-        // 00E0
-        opcodesMap.put((short) 224, () -> this::printOpcode);
+        // chip-8 opcodes
+        opcodesMap.put((char) 0x00E0, this::printOpcode);
+        opcodesMap.put((char) 0x00EE, this::printOpcode);
+        opcodesMap.put((char) 0x1000, this::printOpcode);
+        opcodesMap.put((char) 0x2000, this::printOpcode);
+        opcodesMap.put((char) 0x3000, this::printOpcode);
+        opcodesMap.put((char) 0x4000, this::printOpcode);
+        opcodesMap.put((char) 0x5000, this::printOpcode);
+        opcodesMap.put((char) 0x6000, this::printOpcode);
+        opcodesMap.put((char) 0x7000, this::printOpcode);
+        opcodesMap.put((char) 0x8000, this::printOpcode);
+        opcodesMap.put((char) 0x8001, this::printOpcode);
+        opcodesMap.put((char) 0x8002, this::printOpcode);
+        opcodesMap.put((char) 0x8003, this::printOpcode);
+        opcodesMap.put((char) 0x8004, this::printOpcode);
+        opcodesMap.put((char) 0x8005, this::printOpcode);
+        opcodesMap.put((char) 0x8006, this::printOpcode);
+        opcodesMap.put((char) 0x8007, this::printOpcode);
+        opcodesMap.put((char) 0x800E, this::printOpcode);
+        opcodesMap.put((char) 0x9000, this::printOpcode);
+        opcodesMap.put((char) 0xA000, this::printOpcode);
+        opcodesMap.put((char) 0xB000, this::printOpcode);
+        opcodesMap.put((char) 0xC000, this::printOpcode);
+        opcodesMap.put((char) 0xD000, this::printOpcode);
+        opcodesMap.put((char) 0xE09E, this::printOpcode);
+        opcodesMap.put((char) 0xE0A1, this::printOpcode);
+        opcodesMap.put((char) 0xF007, this::printOpcode);
+        opcodesMap.put((char) 0xF00A, this::printOpcode);
+        opcodesMap.put((char) 0xF015, this::printOpcode);
+        opcodesMap.put((char) 0xF018, this::printOpcode);
+        opcodesMap.put((char) 0xF01E, this::printOpcode);
+        opcodesMap.put((char) 0xF029, this::printOpcode);
+        opcodesMap.put((char) 0xF033, this::printOpcode);
+        opcodesMap.put((char) 0xF055, this::printOpcode);
+        opcodesMap.put((char) 0xF065, this::printOpcode);
 
-        // 00EE
-        opcodesMap.put((short) 238, () -> this::printOpcode);
-
-        // 1000
-        opcodesMap.put((short) 4096, () -> this::printOpcode);
-
-        // 2000
-        opcodesMap.put((short) 8192, () -> this::printOpcode);
-
-        // 3000
-        opcodesMap.put((short) 12288, () -> this::printOpcode);
-
-        // 4000
-        opcodesMap.put((short) 16384, () -> this::printOpcode);
-
-        // 5000
-        opcodesMap.put((short) 20480, () -> this::printOpcode);
-
-        // 6000
-        opcodesMap.put((short) 24576, () -> this::printOpcode);
-
-        // 7000
-        opcodesMap.put((short) 28672, () -> this::printOpcode);
-
-        // 8000
-        opcodesMap.put((short) 32768, () -> this::printOpcode);
-
-        // 8001
-        opcodesMap.put((short) 32769, () -> this::printOpcode);
-
-        // 8002
-        opcodesMap.put((short) 32770, () -> this::printOpcode);
-
-        // 8003
-        opcodesMap.put((short) 32771, () -> this::printOpcode);
-
-        // 8004
-        opcodesMap.put((short) 32772, () -> this::printOpcode);
-
-        // 8005
-        opcodesMap.put((short) 32773, () -> this::printOpcode);
-
-        // 8006
-        opcodesMap.put((short) 32774, () -> this::printOpcode);
-
-        // 8007
-        opcodesMap.put((short) 32775, () -> this::printOpcode);
-
-        // 800E
-        opcodesMap.put((short) 32782, () -> this::printOpcode);
-
-        // 9000
-        opcodesMap.put((short) 36864, () -> this::printOpcode);
-
-        // A000
-        opcodesMap.put((short) 40960, () -> this::printOpcode);
-
-        // B000
-        opcodesMap.put((short) 45056, () -> this::printOpcode);
-
-        // C000
-        opcodesMap.put((short) 49152, () -> this::printOpcode);
-
-        // D000
-        opcodesMap.put((short) 53248, () -> this::printOpcode);
-
-        // E09E
-        opcodesMap.put((short) 57502, () -> this::printOpcode);
-
-        // E0A1
-        opcodesMap.put((short) 57505, () -> this::printOpcode);
-
-        // F007
-        opcodesMap.put((short) 61447, () -> this::printOpcode);
-
-        // F00A
-        opcodesMap.put((short) 61450, () -> this::printOpcode);
-
-        // F015
-        opcodesMap.put((short) 61461, () -> this::printOpcode);
-
-        // F018
-        opcodesMap.put((short) 61464, () -> this::printOpcode);
-
-        // F01E
-        opcodesMap.put((short) 61470, () -> this::printOpcode);
-
-        // F029
-        opcodesMap.put((short) 61481, () -> this::printOpcode);
-
-        // F033
-        opcodesMap.put((short) 61491, () -> this::printOpcode);
-
-        // F055
-        opcodesMap.put((short) 61525, () -> this::printOpcode);
-
-        // F065
-        opcodesMap.put((short) 61541, () -> this::printOpcode);
-
+        // TODO superchip opcodes
         // </editor-fold>
     }
 
     @Override
-    protected Task<Integer> createTask() {
-        return new Task<Integer>() {
+    protected Task<Short> createTask() {
+        return new Task<Short>() {
             @Override
-            protected Integer call() throws Exception {
-                //60Hz timer
-                executor.scheduleWithFixedDelay(() -> {
+            protected Short call() throws Exception {
+                // 60Hz timer
+                soundTimerFuture = ((ScheduledExecutorService) getExecutor()).scheduleWithFixedDelay(() -> {
                     timerTick();
                 }, 1000 / 60, 1000 / 60, TimeUnit.MILLISECONDS);
 
-                //CPU timer
-                executor.scheduleWithFixedDelay(() -> {
+                // CPU timer
+                delayTimerFuture = ((ScheduledExecutorService) getExecutor()).scheduleWithFixedDelay(() -> {
                     cpuTick();
                     updateValue(changeCycle());
                 }, 1000 / cpuSpeed, 1000 / cpuSpeed, TimeUnit.MILLISECONDS);
 
-                //so it doesnt finalyze, ever...
                 while (true) {
                 }
             }
@@ -218,24 +151,37 @@ public class Chip8 extends Service<Integer> {
     }
 
     @Override
+    public void restart() {
+        Arrays.fill(v, (char) 0);
+        i = 0;
+        programCounter = 512;
+        Arrays.fill(stack, (char) 0);
+        stackPointer = 0;
+        soundTimer = 0;
+        delayTimer = 0;
+        super.restart();
+    }
+
+    @Override
     public boolean cancel() {
-        executor.shutdownNow();
+        soundTimerFuture.cancel(true);
+        delayTimerFuture.cancel(true);
         return super.cancel();
     }
 
-    //500Hz ~ 1000Hz
+    // 500Hz ~ 1000Hz
     private void cpuTick() {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
 
-        if (opcodesMap.containsKey((short) decodedOpcode)) {
-            opcodesMap.get((short) decodedOpcode).get().execute(opcode);
+        if (opcodesMap.containsKey(decodedOpcode)) {
+            opcodesMap.get(decodedOpcode).accept(opcode);
         } else {
-            System.out.println("UNKNOWN OPCODE - " + Integer.toHexString(decodedOpcode).toUpperCase());
+            System.out.println("UNKNOWN OPCODE - 0x" + Integer.toHexString(decodedOpcode).toUpperCase());
         }
     }
 
-    //60Hz
+    // 60Hz
     private void timerTick() {
         if (soundTimer > 0) {
             soundTimer--;
@@ -246,7 +192,7 @@ public class Chip8 extends Service<Integer> {
         }
     }
 
-    private int changeCycle() {
+    private short changeCycle() {
         if (cycle > cpuSpeed) {
             cycle = 0;
         } else {
@@ -260,11 +206,16 @@ public class Chip8 extends Service<Integer> {
         input.register(key);
     }
 
-    //opcode methods
-    //debug
+    // opcode methods
+    // debug
     private void printOpcode(char arg) {
         System.out.println(Integer.toHexString(arg).toUpperCase());
         programCounter += 2;
+    }
+
+    private void emptyRegion(char arg) {
+        System.out.println("EMPTY MEMORY ADDRESS REACHED - " + Integer.toHexString(programCounter));
+        cancel();
     }
 
     // 0000
