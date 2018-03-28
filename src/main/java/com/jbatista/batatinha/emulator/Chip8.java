@@ -1,7 +1,9 @@
 package com.jbatista.batatinha.emulator;
 
+import com.jbatista.batatinha.emulator.Input.Key;
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.util.Arrays;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -16,16 +18,15 @@ public class Chip8 extends Service<Integer> {
     //child threads
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
-    private final File program;
     private final short cpuSpeed;
     private short cycle = 0;
 
     //CPU, memory, registers, font
-    private short opcode = 0x0;
+    private char opcode = 0x0;
     private final char[] memory = new char[4096];
     private final char[] v = new char[16];
-    private short i = 0;
-    private short pc = 0x200;
+    private char i = 0;
+    private char pc = 0x200;
     private final char[] font = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -46,8 +47,8 @@ public class Chip8 extends Service<Integer> {
     };
 
     //GO TO stack
-    private final short[] stack = new short[16];
-    private short stackPointer = 0;
+    private final char[] stack = new char[16];
+    private char stackPointer = 0;
 
     //timers
     private short soundTimer = 0;
@@ -56,128 +57,136 @@ public class Chip8 extends Service<Integer> {
     //auxiliary
     private final Display display;
     private final Input input = new Input();
-    private final Map<Short, Opcode> opcodesMap = new HashMap<>();
+    private final Map<String, Opcode> opcodesMap = new HashMap<>();
+    private final StringBuilder decodedOpcode = new StringBuilder();
 
     public Chip8(short cpuSpeed, File program, GraphicsContext screen) throws Exception {
-        this.program = program;
         this.cpuSpeed = cpuSpeed;
         this.display = new Display(screen);
-
-        //zero fill memory and registers
-        Arrays.fill(memory, (char) 0x0);
-        Arrays.fill(v, (char) 0x0);
 
         //load font
         for (int i = 0; i < 80; i++) {
             memory[i] = font[i];
         }
 
+        //load program
+        final BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(program), 512);
+        int data;
+        int index = 0;
+        while ((data = bufferedInputStream.read()) != -1) {
+            memory[index + 512] = (char) data;
+            index++;
+        }
+        bufferedInputStream.close();
+
         //opcodes list
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        //<editor-fold defaultstate="collapsed" desc="double click to expand">
+        opcodesMap.put("0000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("00e0", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("00ee", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("1000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("2000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("3000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("4000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("5000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("6000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("7000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8001", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8002", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8003", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8004", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8005", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8006", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("8007", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("800e", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("9000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("a000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("b000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("c000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("d000", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("e09e", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("e0a1", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f007", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f00a", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f015", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f018", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f01e", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f029", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f033", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f055", (arg) -> {
+            printOpcode(arg);
         });
-        opcodesMap.put((short) 0x0, (arg) -> {
-            testOpcode(arg);
+        opcodesMap.put("f065", (arg) -> {
+            printOpcode(arg);
         });
+        // </editor-fold>
     }
 
     @Override
@@ -211,9 +220,16 @@ public class Chip8 extends Service<Integer> {
 
     //500Hz ~ 1000Hz
     private void cpuTick() {
-        opcode = (short) (memory[pc] << 8 | memory[pc + 1]);
+        opcode = (char) (memory[pc] << 8 | memory[pc + 1]);
+        decodedOpcode.setLength(0);
+        decodedOpcode.append(Integer.toHexString(opcode & 0xF000));
 
-        opcodesMap.get(opcode).execute(opcode);
+        if (opcodesMap.containsKey(decodedOpcode.toString())) {
+            opcodesMap.get(decodedOpcode.toString()).execute(opcode);
+        } else {
+            System.out.println("UNK OPC - " + decodedOpcode);
+        }
+
     }
 
     //60Hz
@@ -237,9 +253,14 @@ public class Chip8 extends Service<Integer> {
         return cycle;
     }
 
+    public void keyPress(Key key) {
+        input.register(key);
+    }
+
     //opcode methods
-    public void testOpcode(Short arg) {
-        System.out.println(arg);
+    private void printOpcode(char arg) {
+        System.out.println(Integer.toHexString(arg));
+        pc += 2;
     }
 
 }

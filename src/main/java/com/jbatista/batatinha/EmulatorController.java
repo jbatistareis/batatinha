@@ -13,6 +13,8 @@ import javafx.scene.control.Label;
 public class EmulatorController implements Initializable {
 
     private Chip8 chip8;
+    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
+    private short cpuSpeed = 500;
 
     @FXML
     private Label label;
@@ -23,7 +25,7 @@ public class EmulatorController implements Initializable {
         System.out.println("You clicked me!");
         label.setText("Hello World!");
 
-        chip8 = new Chip8((short) 500, new File(""), screen.getGraphicsContext2D());
+        chip8 = new Chip8(cpuSpeed, program, screen.getGraphicsContext2D());
         chip8.start();
     }
 
