@@ -22,7 +22,7 @@ public class Chip8 extends Service<Integer> {
     private short cycle = 0;
 
     //CPU, memory, registers, font
-    private char opcode = 0x0;
+    private char opcode = 0;
     private final char[] memory = new char[4096];
     private final char[] v = new char[16];
     private char i = 0;
@@ -57,8 +57,8 @@ public class Chip8 extends Service<Integer> {
     //auxiliary
     private final Display display;
     private final Input input = new Input();
-    private final Map<String, Opcode> opcodesMap = new HashMap<>();
-    private final StringBuilder decodedOpcode = new StringBuilder();
+    private final Map<Short, Opcode> opcodesMap = new HashMap<>();
+    private char decodedOpcode;
 
     public Chip8(short cpuSpeed, File program, GraphicsContext screen) throws Exception {
         this.cpuSpeed = cpuSpeed;
@@ -79,113 +79,182 @@ public class Chip8 extends Service<Integer> {
         }
         bufferedInputStream.close();
 
-        //opcodes list
-        //<editor-fold defaultstate="collapsed" desc="double click to expand">
-        opcodesMap.put("0000", (arg) -> {
+        //<editor-fold defaultstate="collapsed" desc="opcodes list, converted to short because java doesnt support unsigned numbers, double click to expand (Netbeans)">
+        // 0000
+        opcodesMap.put((short) 0, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("00e0", (arg) -> {
+
+        // 00e0
+        opcodesMap.put((short) 224, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("00ee", (arg) -> {
+
+        // 00ee
+        opcodesMap.put((short) 238, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("1000", (arg) -> {
+
+        // 1000
+        opcodesMap.put((short) 4096, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("2000", (arg) -> {
+
+        // 2000
+        opcodesMap.put((short) 8192, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("3000", (arg) -> {
+
+        // 3000
+        opcodesMap.put((short) 12288, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("4000", (arg) -> {
+
+        // 4000
+        opcodesMap.put((short) 16384, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("5000", (arg) -> {
+
+        // 5000
+        opcodesMap.put((short) 20480, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("6000", (arg) -> {
+
+        // 6000
+        opcodesMap.put((short) 24576, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("7000", (arg) -> {
+
+        // 7000
+        opcodesMap.put((short) 28672, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8000", (arg) -> {
+
+        // 8000
+        opcodesMap.put((short) 32768, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8001", (arg) -> {
+
+        // 8001
+        opcodesMap.put((short) 32769, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8002", (arg) -> {
+
+        // 8002
+        opcodesMap.put((short) 32770, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8003", (arg) -> {
+
+        // 8003
+        opcodesMap.put((short) 32771, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8004", (arg) -> {
+
+        // 8004
+        opcodesMap.put((short) 32772, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8005", (arg) -> {
+
+        // 8005
+        opcodesMap.put((short) 32773, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8006", (arg) -> {
+
+        // 8006
+        opcodesMap.put((short) 32774, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("8007", (arg) -> {
+
+        // 8007
+        opcodesMap.put((short) 32775, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("800e", (arg) -> {
+
+        // 800e
+        opcodesMap.put((short) 32782, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("9000", (arg) -> {
+
+        // 9000
+        opcodesMap.put((short) 36864, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("a000", (arg) -> {
+
+        // a000
+        opcodesMap.put((short) 40960, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("b000", (arg) -> {
+
+        // b000
+        opcodesMap.put((short) 45056, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("c000", (arg) -> {
+
+        // c000
+        opcodesMap.put((short) 49152, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("d000", (arg) -> {
+
+        // d000
+        opcodesMap.put((short) 53248, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("e09e", (arg) -> {
+
+        // e09e
+        opcodesMap.put((short) 57502, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("e0a1", (arg) -> {
+
+        // e0a1
+        opcodesMap.put((short) 57505, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f007", (arg) -> {
+
+        // f007
+        opcodesMap.put((short) 61447, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f00a", (arg) -> {
+
+        // f00a
+        opcodesMap.put((short) 61450, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f015", (arg) -> {
+
+        // f015
+        opcodesMap.put((short) 61461, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f018", (arg) -> {
+
+        // f018
+        opcodesMap.put((short) 61464, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f01e", (arg) -> {
+
+        // f01e
+        opcodesMap.put((short) 61470, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f029", (arg) -> {
+
+        // f029
+        opcodesMap.put((short) 61481, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f033", (arg) -> {
+
+        // f033
+        opcodesMap.put((short) 61491, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f055", (arg) -> {
+
+        // f055
+        opcodesMap.put((short) 61525, (arg) -> {
             printOpcode(arg);
         });
-        opcodesMap.put("f065", (arg) -> {
+
+        // f065
+        opcodesMap.put((short) 61541, (arg) -> {
             printOpcode(arg);
         });
+
         // </editor-fold>
     }
 
@@ -221,13 +290,12 @@ public class Chip8 extends Service<Integer> {
     //500Hz ~ 1000Hz
     private void cpuTick() {
         opcode = (char) (memory[pc] << 8 | memory[pc + 1]);
-        decodedOpcode.setLength(0);
-        decodedOpcode.append(Integer.toHexString(opcode & 0xF000));
+        decodedOpcode = (char) (opcode & 0xF000);
 
-        if (opcodesMap.containsKey(decodedOpcode.toString())) {
-            opcodesMap.get(decodedOpcode.toString()).execute(opcode);
+        if (opcodesMap.containsKey((short) decodedOpcode)) {
+            opcodesMap.get((short) decodedOpcode).execute(opcode);
         } else {
-            System.out.println("UNK OPC - " + decodedOpcode);
+            System.out.println("UNK OPC - " + Integer.toHexString(decodedOpcode));
         }
 
     }
