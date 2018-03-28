@@ -26,7 +26,7 @@ public class Chip8 extends Service<Integer> {
     private final char[] memory = new char[4096];
     private final char[] v = new char[16];
     private char i = 0;
-    private char pc = 0x200;
+    private char programCounter = 0x200;
     private final char[] font = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -80,6 +80,12 @@ public class Chip8 extends Service<Integer> {
         bufferedInputStream.close();
 
         //<editor-fold defaultstate="collapsed" desc="opcodes list, converted to short because java doesnt support unsigned numbers, double click to expand (Netbeans)">
+        // empty address
+        opcodesMap.put((short) -4096, (arg) -> {
+            System.out.println("EMPTY MEMORY ADDRESS REACHED - " + Integer.toHexString(programCounter));
+            executor.shutdownNow();
+        });
+
         // 0000
         opcodesMap.put((short) 0, (arg) -> {
             printOpcode(arg);
@@ -289,15 +295,14 @@ public class Chip8 extends Service<Integer> {
 
     //500Hz ~ 1000Hz
     private void cpuTick() {
-        opcode = (char) (memory[pc] << 8 | memory[pc + 1]);
+        opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
 
         if (opcodesMap.containsKey((short) decodedOpcode)) {
             opcodesMap.get((short) decodedOpcode).execute(opcode);
         } else {
-            System.out.println("UNK OPC - " + Integer.toHexString(decodedOpcode));
+            System.out.println("UNKNOWN OPCODE - " + Integer.toHexString(decodedOpcode).toUpperCase());
         }
-
     }
 
     //60Hz
@@ -327,8 +332,8 @@ public class Chip8 extends Service<Integer> {
 
     //opcode methods
     private void printOpcode(char arg) {
-        System.out.println(Integer.toHexString(arg));
-        pc += 2;
+        System.out.println(Integer.toHexString(arg).toUpperCase());
+        programCounter += 2;
     }
 
 }
