@@ -170,6 +170,10 @@ public class Chip8 extends Service<Short> {
     private void cpuTick() {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
+
+        System.out.println("OPC: 0x" + Integer.toHexString(opcode).toUpperCase());
+        System.out.println("DEC OPC: 0x" + Integer.toHexString(decodedOpcode).toUpperCase() + '\n');
+
         if (opcodesMap.containsKey(decodedOpcode)) {
             opcodesMap.get(decodedOpcode).accept(opcode);
         } else {
@@ -202,10 +206,10 @@ public class Chip8 extends Service<Short> {
         input.register(key);
     }
 
-    // opcode methods
+    // <editor-fold defaultstate="collapsed" desc="opcode methods, double click to expand (Netbeans)">
     // debug
     private void printOpcode(char arg) {
-        System.out.println("0x" + Integer.toHexString(arg).toUpperCase());
+        System.out.println("0x" + Integer.toHexString(arg).toUpperCase() + '\n');
         programCounter += 2;
     }
 
@@ -237,12 +241,14 @@ public class Chip8 extends Service<Short> {
 
     // 2000
     private void callSubroutine(char arg) {
-        // ?
+        stack[stackPointer] = programCounter;
+        stackPointer++;
+        programCounter = (char) (arg & 0x0FFF);
     }
 
     // 3000
     private void skipVxEqNN(char arg) {
-        if (v[arg & 0x0F00] == (arg & 0x00FF)) {
+        if (v[(arg & 0x0F00) / 256] == (arg & 0x00FF)) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -251,7 +257,7 @@ public class Chip8 extends Service<Short> {
 
     // 4000
     private void skipVxNotEqNN(char arg) {
-        if (v[arg & 0x0F00] != (arg & 0x00FF)) {
+        if (v[(arg & 0x0F00) / 256] != (arg & 0x00FF)) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -260,7 +266,7 @@ public class Chip8 extends Service<Short> {
 
     // 5000
     private void skipVxEqVy(char arg) {
-        if (v[arg & 0x0F00] == v[arg & 0x00F0]) {
+        if (v[(arg & 0x0F00) / 256] == v[(arg & 0x0F00) / 256]) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -269,45 +275,48 @@ public class Chip8 extends Service<Short> {
 
     // 6000
     private void setVx(char arg) {
-        v[arg & 0x0F00] = (char) (arg & 0x00FF);
+        v[(arg & 0x0F00) / 256] = (char) (arg & 0x00FF);
         programCounter += 2;
     }
 
     // 7000
     private void addNNtoVx(char arg) {
-        v[arg & 0x0F00] += (char) (arg & 0x00FF);
+        v[(arg & 0x0F00) / 256] += (char) (arg & 0x00FF);
+        if (v[(arg & 0x0F00) / 256] > 255) {
+            v[(arg & 0x0F00) / 256] = 0;
+        }
         programCounter += 2;
     }
 
     // 8000
     private void setVxTovY(char arg) {
-        v[arg & 0x0F00] = v[arg & 0x00F0];
+        v[(arg & 0x0F00) / 256] = v[arg & 0x00F0];
         programCounter += 2;
     }
 
     // 8001
     private void setVxToVxOrVy(char arg) {
-        v[arg & 0x0F00] = (char) (v[arg & 0x0F00] | v[arg & 0x00F0]);
+        v[(arg & 0x0F00) / 256] = (char) (v[arg & 0x0F00] | v[arg & 0x00F0]);
         programCounter += 2;
     }
 
     // 8002
     private void setVxToVxAndVy(char arg) {
-        v[arg & 0x0F00] = (char) (v[arg & 0x0F00] & v[arg & 0x00F0]);
+        v[(arg & 0x0F00) / 256] = (char) (v[arg & 0x0F00] & v[arg & 0x00F0]);
         programCounter += 2;
     }
 
     // 8003
     private void setVxToVxXorVy(char arg) {
-        v[arg & 0x0F00] = (char) (v[arg & 0x0F00] ^ v[arg & 0x00F0]);
+        v[(arg & 0x0F00) / 256] = (char) (v[arg & 0x0F00] ^ v[arg & 0x00F0]);
         programCounter += 2;
     }
 
     // 8004
     private void addVxToVyCarry(char arg) {
-        v[arg & 0x0F00] += v[arg & 0x00F0];
-        if (v[arg & 0x0F00] > 255) {
-            v[arg & 0x0F00] = 0;
+        v[(arg & 0x0F00) / 256] += v[arg & 0x00F0];
+        if (v[(arg & 0x0F00) / 256] > 255) {
+            v[(arg & 0x0F00) / 256] = 0;
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
@@ -318,8 +327,8 @@ public class Chip8 extends Service<Short> {
     // 8005
     private void subtractVxToVyCarry(char arg) {
         v[arg & 0x0F00] -= v[arg & 0x00F0];
-        if (v[arg & 0x0F00] < 0) {
-            v[arg & 0x0F00] = 0;
+        if (v[(arg & 0x0F00) / 256] < 0) {
+            v[(arg & 0x0F00) / 256] = 0;
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
@@ -422,4 +431,6 @@ public class Chip8 extends Service<Short> {
     private void call(char arg) {
 
      */
+    // TODO superchip opcodes
+    // </editor-fold>
 }
