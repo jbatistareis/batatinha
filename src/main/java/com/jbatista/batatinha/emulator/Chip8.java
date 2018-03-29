@@ -172,7 +172,7 @@ public class Chip8 extends Service<Short> {
         decodedOpcode = (char) (opcode & 0xF000);
 
         System.out.println("OPC: 0x" + Integer.toHexString(opcode).toUpperCase());
-        System.out.println("DEC OPC: 0x" + Integer.toHexString(decodedOpcode).toUpperCase() + '\n');
+        System.out.println("DEC OPC: 0x" + Integer.toHexString(decodedOpcode).toUpperCase());
 
         if (opcodesMap.containsKey(decodedOpcode)) {
             opcodesMap.get(decodedOpcode).accept(opcode);
@@ -219,36 +219,46 @@ public class Chip8 extends Service<Short> {
     }
 
     // 0000
-    private void call(char arg) {
+    private void call(char opc) {
         // not used (?)
     }
 
     // 00E0
-    private void dispClear(char arg) {
+    private void dispClear(char opc) {
+        System.out.println("DISP CLEAR\n");
+        
         display.clear();
         programCounter += 2;
     }
 
     // 00EE
-    private void returnSubRoutine(char arg) {
+    private void returnSubRoutine(char opc) {
+        System.out.println("RETURN SUBROUTINE\n");
+        
         // ?
     }
 
     // 1000
-    private void goTo(char arg) {
-        programCounter = (char) (arg & 0x0FFF);
+    private void goTo(char opc) {
+        System.out.println("GOTO\n");
+        
+        programCounter = (char) (opc & 0x0FFF);
     }
 
     // 2000
-    private void callSubroutine(char arg) {
+    private void callSubroutine(char opc) {
+        System.out.println("CALL SUBROUTINE\n");
+        
         stack[stackPointer] = programCounter;
         stackPointer++;
-        programCounter = (char) (arg & 0x0FFF);
+        programCounter = (char) (opc & 0x0FFF);
     }
 
     // 3000
-    private void skipVxEqNN(char arg) {
-        if (v[(arg & 0x0F00) / 256] == (arg & 0x00FF)) {
+    private void skipVxEqNN(char opc) {
+        System.out.println("SKIP IF VX == NN\n");
+        
+        if (v[(opc & 0x0F00) / 256] == (opc & 0x00FF)) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -256,8 +266,10 @@ public class Chip8 extends Service<Short> {
     }
 
     // 4000
-    private void skipVxNotEqNN(char arg) {
-        if (v[(arg & 0x0F00) / 256] != (arg & 0x00FF)) {
+    private void skipVxNotEqNN(char opc) {
+        System.out.println("SKIP IF VX != NN\n");
+        
+        if (v[(opc & 0x0F00) / 256] != (opc & 0x00FF)) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -265,8 +277,10 @@ public class Chip8 extends Service<Short> {
     }
 
     // 5000
-    private void skipVxEqVy(char arg) {
-        if (v[(arg & 0x0F00) / 256] == v[(arg & 0x0F00) / 256]) {
+    private void skipVxEqVy(char opc) {
+        System.out.println("SKIP IF VX == VY\n");
+        
+        if (v[(opc & 0x0F00) / 256] == v[(opc & 0x0F00) / 256]) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -274,49 +288,63 @@ public class Chip8 extends Service<Short> {
     }
 
     // 6000
-    private void setVx(char arg) {
-        v[(arg & 0x0F00) / 256] = (char) (arg & 0x00FF);
+    private void setVx(char opc) {
+        System.out.println("SET VX\n");
+        
+        v[(opc & 0x0F00) / 256] = (char) (opc & 0x00FF);
         programCounter += 2;
     }
 
     // 7000
-    private void addNNtoVx(char arg) {
-        v[(arg & 0x0F00) / 256] += (char) (arg & 0x00FF);
-        if (v[(arg & 0x0F00) / 256] > 255) {
-            v[(arg & 0x0F00) / 256] = 0;
+    private void addNNtoVx(char opc) {
+        System.out.println("VX += NN\n");
+        
+        v[(opc & 0x0F00) / 256] += (char) (opc & 0x00FF);
+        if (v[(opc & 0x0F00) / 256] > 255) {
+            v[(opc & 0x0F00) / 256] = 0;
         }
         programCounter += 2;
     }
 
     // 8000
-    private void setVxTovY(char arg) {
-        v[(arg & 0x0F00) / 256] = v[arg & 0x00F0];
+    private void setVxTovY(char opc) {
+        System.out.println("VX = VY\n");
+        
+        v[(opc & 0x0F00) / 256] = v[(opc & 0x00F0) / 256];
         programCounter += 2;
     }
 
     // 8001
-    private void setVxToVxOrVy(char arg) {
-        v[(arg & 0x0F00) / 256] = (char) (v[arg & 0x0F00] | v[arg & 0x00F0]);
+    private void setVxToVxOrVy(char opc) {
+        System.out.println("VX = VX | VY\n");
+        
+        v[(opc & 0x0F00) / 256] = (char) (v[(opc & 0x0F00) / 256] | v[(opc & 0x00F0) / 256]);
         programCounter += 2;
     }
 
     // 8002
-    private void setVxToVxAndVy(char arg) {
-        v[(arg & 0x0F00) / 256] = (char) (v[arg & 0x0F00] & v[arg & 0x00F0]);
+    private void setVxToVxAndVy(char opc) {
+        System.out.println("VX = VX & VY\n");
+        
+        v[(opc & 0x0F00) / 256] = (char) (v[(opc & 0x0F00) / 256] & v[(opc & 0x00F0) / 256]);
         programCounter += 2;
     }
 
     // 8003
-    private void setVxToVxXorVy(char arg) {
-        v[(arg & 0x0F00) / 256] = (char) (v[arg & 0x0F00] ^ v[arg & 0x00F0]);
+    private void setVxToVxXorVy(char opc) {
+        System.out.println("VX = VX ^ VY\n");
+        
+        v[(opc & 0x0F00) / 256] = (char) (v[(opc & 0x0F00) / 256] ^ v[(opc & 0x00F0) / 256]);
         programCounter += 2;
     }
 
     // 8004
-    private void addVxToVyCarry(char arg) {
-        v[(arg & 0x0F00) / 256] += v[arg & 0x00F0];
-        if (v[(arg & 0x0F00) / 256] > 255) {
-            v[(arg & 0x0F00) / 256] = 0;
+    private void addVxToVyCarry(char opc) {
+        System.out.println("VX += VY (CARRY)\n");
+        
+        v[(opc & 0x0F00) / 256] += v[(opc & 0x00F0) / 256];
+        if (v[(opc & 0x0F00) / 256] > 255) {
+            v[(opc & 0x0F00) / 256] = 0;
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
@@ -325,10 +353,12 @@ public class Chip8 extends Service<Short> {
     }
 
     // 8005
-    private void subtractVxToVyCarry(char arg) {
-        v[arg & 0x0F00] -= v[arg & 0x00F0];
-        if (v[(arg & 0x0F00) / 256] < 0) {
-            v[(arg & 0x0F00) / 256] = 0;
+    private void subtractVxToVyCarry(char opc) {
+        System.out.println("VX -= VY (CARRY)\n");
+        
+        v[(opc & 0x0F00) / 256] -= v[(opc & 0x00F0) / 256];
+        if (v[(opc & 0x0F00) / 256] < 0) {
+            v[(opc & 0x0F00) / 256] = 0;
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
@@ -338,97 +368,97 @@ public class Chip8 extends Service<Short> {
 
     /*
     // 8006
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // 8007
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // 800E
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // 9000
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // A000
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // B000
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // C000
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // D000
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // E09E
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // E0A1
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F007
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F00A
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F015
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F018
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F01E
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F029
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F033
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F055
-    private void call(char arg) {
+    private void call(char opc) {
 
     }
 
     // F065
-    private void call(char arg) {
+    private void call(char opc) {
 
      */
     // TODO superchip opcodes
