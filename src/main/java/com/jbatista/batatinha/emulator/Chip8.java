@@ -87,21 +87,21 @@ public class Chip8 extends Service<Short> {
         opcodesMap.put((char) 0xF000, this::emptyRegion);
 
         // chip-8 opcodes
-        opcodesMap.put((char) 0x00E0, this::printOpcode);
-        opcodesMap.put((char) 0x00EE, this::printOpcode);
-        opcodesMap.put((char) 0x1000, this::printOpcode);
-        opcodesMap.put((char) 0x2000, this::printOpcode);
-        opcodesMap.put((char) 0x3000, this::printOpcode);
-        opcodesMap.put((char) 0x4000, this::printOpcode);
-        opcodesMap.put((char) 0x5000, this::printOpcode);
-        opcodesMap.put((char) 0x6000, this::printOpcode);
-        opcodesMap.put((char) 0x7000, this::printOpcode);
-        opcodesMap.put((char) 0x8000, this::printOpcode);
-        opcodesMap.put((char) 0x8001, this::printOpcode);
-        opcodesMap.put((char) 0x8002, this::printOpcode);
-        opcodesMap.put((char) 0x8003, this::printOpcode);
-        opcodesMap.put((char) 0x8004, this::printOpcode);
-        opcodesMap.put((char) 0x8005, this::printOpcode);
+        opcodesMap.put((char) 0x00E0, this::dispClear);
+        opcodesMap.put((char) 0x00EE, this::returnSubRoutine);
+        opcodesMap.put((char) 0x1000, this::goTo);
+        opcodesMap.put((char) 0x2000, this::callSubroutine);
+        opcodesMap.put((char) 0x3000, this::skipVxEqNN);
+        opcodesMap.put((char) 0x4000, this::skipVxNotEqNN);
+        opcodesMap.put((char) 0x5000, this::skipVxEqVy);
+        opcodesMap.put((char) 0x6000, this::setVx);
+        opcodesMap.put((char) 0x7000, this::addNNtoVx);
+        opcodesMap.put((char) 0x8000, this::setVxTovY);
+        opcodesMap.put((char) 0x8001, this::setVxToVxOrVy);
+        opcodesMap.put((char) 0x8002, this::setVxToVxAndVy);
+        opcodesMap.put((char) 0x8003, this::setVxToVxXorVy);
+        opcodesMap.put((char) 0x8004, this::addVxToVyCarry);
+        opcodesMap.put((char) 0x8005, this::subtractVxToVyCarry);
         opcodesMap.put((char) 0x8006, this::printOpcode);
         opcodesMap.put((char) 0x8007, this::printOpcode);
         opcodesMap.put((char) 0x800E, this::printOpcode);
@@ -170,7 +170,6 @@ public class Chip8 extends Service<Short> {
     private void cpuTick() {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
-
         if (opcodesMap.containsKey(decodedOpcode)) {
             opcodesMap.get(decodedOpcode).accept(opcode);
         } else {
@@ -216,38 +215,211 @@ public class Chip8 extends Service<Short> {
     }
 
     // 0000
+    private void call(char arg) {
+        // not used (?)
+    }
+
     // 00E0
+    private void dispClear(char arg) {
+        display.clear();
+        programCounter += 2;
+    }
+
     // 00EE
+    private void returnSubRoutine(char arg) {
+        // ?
+    }
+
     // 1000
+    private void goTo(char arg) {
+        programCounter = (char) (arg & 0x0FFF);
+    }
+
     // 2000
+    private void callSubroutine(char arg) {
+        // ?
+    }
+
     // 3000
+    private void skipVxEqNN(char arg) {
+        if (v[arg & 0x0F00] == (arg & 0x00FF)) {
+            programCounter += 4;
+        } else {
+            programCounter += 2;
+        }
+    }
+
     // 4000
+    private void skipVxNotEqNN(char arg) {
+        if (v[arg & 0x0F00] != (arg & 0x00FF)) {
+            programCounter += 4;
+        } else {
+            programCounter += 2;
+        }
+    }
+
     // 5000
+    private void skipVxEqVy(char arg) {
+        if (v[arg & 0x0F00] == v[arg & 0x00F0]) {
+            programCounter += 4;
+        } else {
+            programCounter += 2;
+        }
+    }
+
     // 6000
+    private void setVx(char arg) {
+        v[arg & 0x0F00] = (char) (arg & 0x00FF);
+        programCounter += 2;
+    }
+
     // 7000
+    private void addNNtoVx(char arg) {
+        v[arg & 0x0F00] += (char) (arg & 0x00FF);
+        programCounter += 2;
+    }
+
     // 8000
+    private void setVxTovY(char arg) {
+        v[arg & 0x0F00] = v[arg & 0x00F0];
+        programCounter += 2;
+    }
+
     // 8001
+    private void setVxToVxOrVy(char arg) {
+        v[arg & 0x0F00] = (char) (v[arg & 0x0F00] | v[arg & 0x00F0]);
+        programCounter += 2;
+    }
+
     // 8002
+    private void setVxToVxAndVy(char arg) {
+        v[arg & 0x0F00] = (char) (v[arg & 0x0F00] & v[arg & 0x00F0]);
+        programCounter += 2;
+    }
+
     // 8003
+    private void setVxToVxXorVy(char arg) {
+        v[arg & 0x0F00] = (char) (v[arg & 0x0F00] ^ v[arg & 0x00F0]);
+        programCounter += 2;
+    }
+
     // 8004
+    private void addVxToVyCarry(char arg) {
+        v[arg & 0x0F00] += v[arg & 0x00F0];
+        if (v[arg & 0x0F00] > 255) {
+            v[arg & 0x0F00] = 0;
+            v[0xF] = 1;
+        } else {
+            v[0xF] = 0;
+        }
+        programCounter += 2;
+    }
+
     // 8005
+    private void subtractVxToVyCarry(char arg) {
+        v[arg & 0x0F00] -= v[arg & 0x00F0];
+        if (v[arg & 0x0F00] < 0) {
+            v[arg & 0x0F00] = 0;
+            v[0xF] = 1;
+        } else {
+            v[0xF] = 0;
+        }
+        programCounter += 2;
+    }
+
+    /*
     // 8006
+    private void call(char arg) {
+
+    }
+
     // 8007
+    private void call(char arg) {
+
+    }
+
     // 800E
+    private void call(char arg) {
+
+    }
+
     // 9000
+    private void call(char arg) {
+
+    }
+
     // A000
+    private void call(char arg) {
+
+    }
+
     // B000
+    private void call(char arg) {
+
+    }
+
     // C000
+    private void call(char arg) {
+
+    }
+
     // D000
+    private void call(char arg) {
+
+    }
+
     // E09E
+    private void call(char arg) {
+
+    }
+
     // E0A1
+    private void call(char arg) {
+
+    }
+
     // F007
+    private void call(char arg) {
+
+    }
+
     // F00A
+    private void call(char arg) {
+
+    }
+
     // F015
+    private void call(char arg) {
+
+    }
+
     // F018
+    private void call(char arg) {
+
+    }
+
     // F01E
+    private void call(char arg) {
+
+    }
+
     // F029
+    private void call(char arg) {
+
+    }
+
     // F033
+    private void call(char arg) {
+
+    }
+
     // F055
+    private void call(char arg) {
+
+    }
+
     // F065
+    private void call(char arg) {
+
+     */
 }

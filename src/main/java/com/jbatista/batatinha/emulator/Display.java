@@ -23,7 +23,7 @@ public class Display {
 
     public void clear() {
         Arrays.fill(pixels, (char) 0);
-        screen.fill();
+        screen.fillRect(0, 0, 32, 64);
     }
 
 }
