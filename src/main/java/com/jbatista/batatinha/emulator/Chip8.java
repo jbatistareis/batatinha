@@ -102,8 +102,8 @@ public class Chip8 extends Service<Short> {
         opcodesMap.put((char) 0x8003, this::setVxToVxXorVy);
         opcodesMap.put((char) 0x8004, this::addVxToVyCarry);
         opcodesMap.put((char) 0x8005, this::subtractVxToVyCarry);
-        opcodesMap.put((char) 0x8006, this::printOpcode);
-        opcodesMap.put((char) 0x8007, this::printOpcode);
+        opcodesMap.put((char) 0x8006, this::shiftVyToVx);
+        opcodesMap.put((char) 0x8007, this::subtractVyAndVx2nd);
         opcodesMap.put((char) 0x800E, this::printOpcode);
         opcodesMap.put((char) 0x9000, this::printOpcode);
         opcodesMap.put((char) 0xA000, this::printOpcode);
@@ -366,17 +366,30 @@ public class Chip8 extends Service<Short> {
         programCounter += 2;
     }
 
-    /*
+    
     // 8006
-    private void call(char opc) {
-
+    private void shiftVyToVx(char opc) {
+        System.out.println("VX = VY = VY >> 1, VF = VY LSB\n");
+    
+        v[0xF] = v[(opc & 0x00F0) >> 4] &= -v[(opc & 0x00F0) >> 4];
+        v[(opc & 0x0F00) >> 8]] = v[(opc & 0x00F0) >> 4] >> 1;
+        programCounter += 2;
     }
 
     // 8007
-    private void call(char opc) {
-
+    private void subtractVyAndVx2nd(char opc) {
+        System.out.println("VX -= VY (CARRY)(2nd)\n");
+        
+        if (v[(opc & 0x0F00) >> 8] > v[(opc & 0x00F0) >> 4]) {
+            v[0xF] = 1;
+        } else {
+            v[0xF] = 0;
+        }
+        v[(opc & 0x00F0) >> 4] -= v[(opc & 0x0F00) >> 8];        
+        programCounter += 2;
     }
 
+    /*
     // 800E
     private void call(char opc) {
 
