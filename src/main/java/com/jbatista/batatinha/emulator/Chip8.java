@@ -258,7 +258,7 @@ public class Chip8 extends Service<Short> {
     private void skipVxEqNN(char opc) {
         System.out.println("SKIP IF VX == NN\n");
         
-        if (v[(opc & 0x0F00) / 256] == (opc & 0x00FF)) {
+        if (v[(opc & 0x0F00) >> 8] == (opc & 0x00FF)) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -269,7 +269,7 @@ public class Chip8 extends Service<Short> {
     private void skipVxNotEqNN(char opc) {
         System.out.println("SKIP IF VX != NN\n");
         
-        if (v[(opc & 0x0F00) / 256] != (opc & 0x00FF)) {
+        if (v[(opc & 0x0F00) >> 8] != (opc & 0x00FF)) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -280,7 +280,7 @@ public class Chip8 extends Service<Short> {
     private void skipVxEqVy(char opc) {
         System.out.println("SKIP IF VX == VY\n");
         
-        if (v[(opc & 0x0F00) / 256] == v[(opc & 0x0F00) / 256]) {
+        if (v[(opc & 0x0F00) >> 8] == v[(opc & 0x0F00) >> 8]) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -291,7 +291,7 @@ public class Chip8 extends Service<Short> {
     private void setVx(char opc) {
         System.out.println("SET VX\n");
         
-        v[(opc & 0x0F00) / 256] = (char) (opc & 0x00FF);
+        v[(opc & 0x0F00) >> 8] = (char) (opc & 0x00FF);
         programCounter += 2;
     }
 
@@ -299,9 +299,9 @@ public class Chip8 extends Service<Short> {
     private void addNNtoVx(char opc) {
         System.out.println("VX += NN\n");
         
-        v[(opc & 0x0F00) / 256] += (char) (opc & 0x00FF);
-        if (v[(opc & 0x0F00) / 256] > 255) {
-            v[(opc & 0x0F00) / 256] = 0;
+        v[(opc & 0x0F00) >> 8] += (char) (opc & 0x00FF);
+        if (v[(opc & 0x0F00) >> 8] > 255) {
+            v[(opc & 0x0F00) >> 8] = 0;
         }
         programCounter += 2;
     }
@@ -310,7 +310,7 @@ public class Chip8 extends Service<Short> {
     private void setVxTovY(char opc) {
         System.out.println("VX = VY\n");
         
-        v[(opc & 0x0F00) / 256] = v[(opc & 0x00F0) / 256];
+        v[(opc & 0x0F00) >> 8] = v[(opc & 0x00F0) >> 8];
         programCounter += 2;
     }
 
@@ -318,7 +318,7 @@ public class Chip8 extends Service<Short> {
     private void setVxToVxOrVy(char opc) {
         System.out.println("VX = VX | VY\n");
         
-        v[(opc & 0x0F00) / 256] = (char) (v[(opc & 0x0F00) / 256] | v[(opc & 0x00F0) / 256]);
+        v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x0F00) >> 8] | v[(opc & 0x00F0) >> 8]);
         programCounter += 2;
     }
 
@@ -326,7 +326,7 @@ public class Chip8 extends Service<Short> {
     private void setVxToVxAndVy(char opc) {
         System.out.println("VX = VX & VY\n");
         
-        v[(opc & 0x0F00) / 256] = (char) (v[(opc & 0x0F00) / 256] & v[(opc & 0x00F0) / 256]);
+        v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x0F00) >> 8] & v[(opc & 0x00F0) >> 8]);
         programCounter += 2;
     }
 
@@ -334,7 +334,7 @@ public class Chip8 extends Service<Short> {
     private void setVxToVxXorVy(char opc) {
         System.out.println("VX = VX ^ VY\n");
         
-        v[(opc & 0x0F00) / 256] = (char) (v[(opc & 0x0F00) / 256] ^ v[(opc & 0x00F0) / 256]);
+        v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x0F00) >> 8] ^ v[(opc & 0x00F0) >> 8]);
         programCounter += 2;
     }
 
@@ -342,9 +342,9 @@ public class Chip8 extends Service<Short> {
     private void addVxToVyCarry(char opc) {
         System.out.println("VX += VY (CARRY)\n");
         
-        v[(opc & 0x0F00) / 256] += v[(opc & 0x00F0) / 256];
-        if (v[(opc & 0x0F00) / 256] > 255) {
-            v[(opc & 0x0F00) / 256] = 0;
+        v[(opc & 0x0F00) >> 8] += v[(opc & 0x00F0) >> 8];
+        if (v[(opc & 0x0F00) >> 8] > 255) {
+            v[(opc & 0x0F00) >> 8] = 0;
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
@@ -356,9 +356,9 @@ public class Chip8 extends Service<Short> {
     private void subtractVxToVyCarry(char opc) {
         System.out.println("VX -= VY (CARRY)\n");
         
-        v[(opc & 0x0F00) / 256] -= v[(opc & 0x00F0) / 256];
-        if (v[(opc & 0x0F00) / 256] < 0) {
-            v[(opc & 0x0F00) / 256] = 0;
+        v[(opc & 0x0F00) >> 8] -= v[(opc & 0x00F0) >> 8];
+        if (v[(opc & 0x0F00) >> 8] < 0) {
+            v[(opc & 0x0F00) >> 8] = 0;
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
