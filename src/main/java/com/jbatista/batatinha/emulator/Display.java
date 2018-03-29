@@ -8,31 +8,40 @@ import javafx.scene.paint.Color;
 
 public class Display {
 
-    private final WritableImage image = new WritableImage(32, 64);
+    private final WritableImage image = new WritableImage(64, 32);
     private final PixelReader reader = image.getPixelReader();
     private final PixelWriter writer = image.getPixelWriter();
-    private final StringBuilder sbPixel = new StringBuilder();
+    private final char[] v;
+    private int x;
+    private int y;
 
-    public Display(ImageView screen) {
+    public Display(ImageView screen, char[] v) {
+        this.v = v;
         screen.setImage(image);
         clear();
     }
 
-    public void draw(int x, int y, char... data) {
-        for (int px = 0; px < 8; px++) {
-            for (int py = 0; py < data.length; py++) {
-                sbPixel.append(reader.getColor(x + px, y + py).equals(Color.BLACK) ? "0" : "1");
+    public void draw(char opcode, char[] data) {
+        x = v[(opcode & 0x0F00) >> 8];
+        y = v[(opcode & 0x00F0) >> 4];
 
-                Integer.parseInt(reader.getColor(x + px, y + py).equals(Color.BLACK) ? "0" : "1");
+        for (int py = 0; py < data.length; py++) {
+            for (int px = 0; px < 8; px++) {
+                if ((data[py] & (0x80 >> px)) != 0) {
+                    if (reader.getColor(x + px, y + py).equals(Color.BLACK)) {
+                        writer.setColor(x + px, y + py, Color.WHITE);
+                    } else {
+                        v[0xf] = 1;
+                        writer.setColor(x + px, y + py, Color.BLACK);
+                    }
+                }
             }
         }
-
-        sbPixel.setLength(0);
     }
 
     public void clear() {
-        for (int x = 31; x >= 0; x--) {
-            for (int y = 0; y <= 63; y++) {
+        for (int x = 63; x >= 0; x--) {
+            for (int y = 0; y <= 31; y++) {
                 writer.setColor(x, y, Color.BLACK);
             }
         }

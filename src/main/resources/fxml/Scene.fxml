@@ -8,7 +8,7 @@
 
 <VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
    <children>
-      <ImageView fx:id="screen" fitHeight="64.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="screen" fitHeight="32.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" />
         <Button fx:id="button" onAction="#handleButtonAction" text="Click Me!" />
         <Label fx:id="label" minHeight="16" minWidth="69" />
    </children>

@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.ImageView;
 
 public class Chip8 extends Service<Short> {
@@ -65,7 +64,7 @@ public class Chip8 extends Service<Short> {
 
     public Chip8(short cpuSpeed, File program, ImageView screen) throws Exception {
         this.cpuSpeed = cpuSpeed;
-        this.display = new Display(screen);
+        this.display = new Display(screen, v);
 
         Arrays.fill(v, (char) 0);
         Arrays.fill(stack, (char) 0);
@@ -312,11 +311,6 @@ public class Chip8 extends Service<Short> {
         System.out.println("VX += NN\n");
 
         v[(opc & 0x0F00) >> 8] += (char) (opc & 0x00FF);
-        /*
-        if (v[(opc & 0x0F00) >> 8] > 255) {
-            v[(opc & 0x0F00) >> 8] = 0;
-        }
-         */
         programCounter += 2;
     }
 
@@ -446,7 +440,12 @@ public class Chip8 extends Service<Short> {
     private void draw(char opc) {
         System.out.println("DRAW\n");
 
-        // TODO
+        final char[] lines = new char[opc & 0x000F];
+        for (int index = 0; index < (opc & 0x000F); index++) {
+            lines[index] = memory[i + index];
+        }
+
+        display.draw(opc, lines);
         programCounter += 2;
     }
 
