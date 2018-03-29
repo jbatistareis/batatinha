@@ -17,6 +17,7 @@ import javafx.scene.canvas.GraphicsContext;
 public class Chip8 extends Service<Short> {
 
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    private final Random random = new Random();
     private final short cpuSpeed;
     private short cycle = 0;
 
@@ -104,19 +105,19 @@ public class Chip8 extends Service<Short> {
         opcodesMap.put((char) 0x8005, this::subtractVxToVyCarry);
         opcodesMap.put((char) 0x8006, this::shiftRightVyToVx);
         opcodesMap.put((char) 0x8007, this::subtractVyAndVx2nd);
-        opcodesMap.put((char) 0x800E, this::printOpcode);
-        opcodesMap.put((char) 0x9000, this::printOpcode);
-        opcodesMap.put((char) 0xA000, this::printOpcode);
-        opcodesMap.put((char) 0xB000, this::printOpcode);
-        opcodesMap.put((char) 0xC000, this::printOpcode);
-        opcodesMap.put((char) 0xD000, this::printOpcode);
+        opcodesMap.put((char) 0x800E, this::shiftLeftVyToVx);
+        opcodesMap.put((char) 0x9000, this::skipVxNotEqVy);
+        opcodesMap.put((char) 0xA000, this::setI);
+        opcodesMap.put((char) 0xB000, this::goToV0);
+        opcodesMap.put((char) 0xC000, this::rand);
+        opcodesMap.put((char) 0xD000, this::draw);
         opcodesMap.put((char) 0xE09E, this::printOpcode);
         opcodesMap.put((char) 0xE0A1, this::printOpcode);
         opcodesMap.put((char) 0xF007, this::printOpcode);
         opcodesMap.put((char) 0xF00A, this::printOpcode);
         opcodesMap.put((char) 0xF015, this::printOpcode);
         opcodesMap.put((char) 0xF018, this::printOpcode);
-        opcodesMap.put((char) 0xF01E, this::printOpcode);
+        opcodesMap.put((char) 0xF01E, this::addsVxToI);
         opcodesMap.put((char) 0xF029, this::printOpcode);
         opcodesMap.put((char) 0xF033, this::printOpcode);
         opcodesMap.put((char) 0xF055, this::printOpcode);
@@ -235,7 +236,8 @@ public class Chip8 extends Service<Short> {
     private void returnSubRoutine(char opc) {
         System.out.println("RETURN SUBROUTINE\n");
         
-        // ?
+        programCounter = stack[stackPointer - 1];
+        stackPointer--;
     }
 
     // 1000
@@ -394,36 +396,53 @@ public class Chip8 extends Service<Short> {
         System.out.println("VX = VY = VY << 1, VF = VY MSB\n");
     
         v[0xF] = (v[(opc & 0x00F0) >> 4] & 0xF0) << 4;
-        v[(opc & 0x0F00) >> 8]] = v[(opc & 0x00F0) >> 4] << 1;
+        v[(opc & 0x0F00) >> 8]] = (char) (v[(opc & 0x00F0) >> 4] << 1);
+        programCounter += 2;
+    }
+
+    // 9000
+    private void skipVxNotEqVy(char opc) {
+        System.out.println("SKIP IF VX != VY\n");
+        
+        if (v[(opc & 0x0F00) >> 8] != v[(opc & 0x00F0) >> 4]) {
+            programCounter += 4;
+        } else {
+            programCounter += 2;
+        }
+    }
+
+    // A000
+    private void setI(char opc) {
+        System.out.println("SET I\n");
+    
+        i = (char) (opc & 0x0FFF);
+        programCounter += 2;
+    }
+    
+    // B000
+    private void goToV0(char opc) {
+        System.out.println("GOTO + V0\n");
+        
+        programCounter = (char) (v[0x0] + (opc & 0x0FFF));
+    }
+
+    // C000
+    private void rand(char opc) {
+        System.out.println("RAND\n");
+        
+        v[(opc & 0x0F00) >> 8]] = random.nextInt(255) & (opc & 0x00FF);
+        programCounter += 2;
+    }
+
+    // D000
+    private void draw(char opc) {
+        System.out.println("DRAW\n");
+        
+        // TODO
         programCounter += 2;
     }
 
     /*
-    // 9000
-    private void call(char opc) {
-
-    }
-
-    // A000
-    private void call(char opc) {
-
-    }
-
-    // B000
-    private void call(char opc) {
-
-    }
-
-    // C000
-    private void call(char opc) {
-
-    }
-
-    // D000
-    private void call(char opc) {
-
-    }
-
     // E09E
     private void call(char opc) {
 
@@ -453,12 +472,17 @@ public class Chip8 extends Service<Short> {
     private void call(char opc) {
 
     }
+    */
 
     // F01E
-    private void call(char opc) {
-
+    private void addsVxToI(char opc) {
+        System.out.println("I += VX\n");
+        
+        i += v[(opc & 0x0F00) >> 8]];
+        programCounter += 2;
     }
 
+    /*
     // F029
     private void call(char opc) {
 
