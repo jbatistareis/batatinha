@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -172,6 +173,13 @@ public class Chip8 extends Service<Short> {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
 
+        // special cases, since the 00 at the beginning is omitted by java
+        if (opcode == 0xEE) {
+            decodedOpcode = 0x00EE;
+        } else if (opcode == 0xE0) {
+            decodedOpcode = 0x00E0;
+        }
+
         System.out.println("OPC: 0x" + Integer.toHexString(opcode).toUpperCase());
         System.out.println("DEC OPC: 0x" + Integer.toHexString(decodedOpcode).toUpperCase());
 
@@ -216,7 +224,8 @@ public class Chip8 extends Service<Short> {
 
     private void emptyRegion(char arg) {
         System.out.println("EMPTY MEMORY ADDRESS REACHED - 0x" + Integer.toHexString(programCounter));
-        cancel();
+        //cancel();
+        programCounter += 2;
     }
 
     // 0000
@@ -227,7 +236,7 @@ public class Chip8 extends Service<Short> {
     // 00E0
     private void dispClear(char opc) {
         System.out.println("DISP CLEAR\n");
-        
+
         display.clear();
         programCounter += 2;
     }
@@ -235,7 +244,7 @@ public class Chip8 extends Service<Short> {
     // 00EE
     private void returnSubRoutine(char opc) {
         System.out.println("RETURN SUBROUTINE\n");
-        
+
         programCounter = stack[stackPointer - 1];
         stackPointer--;
     }
@@ -243,14 +252,14 @@ public class Chip8 extends Service<Short> {
     // 1000
     private void goTo(char opc) {
         System.out.println("GOTO\n");
-        
+
         programCounter = (char) (opc & 0x0FFF);
     }
 
     // 2000
     private void callSubroutine(char opc) {
         System.out.println("CALL SUBROUTINE\n");
-        
+
         stack[stackPointer] = programCounter;
         stackPointer++;
         programCounter = (char) (opc & 0x0FFF);
@@ -259,7 +268,7 @@ public class Chip8 extends Service<Short> {
     // 3000
     private void skipVxEqNN(char opc) {
         System.out.println("SKIP IF VX == NN\n");
-        
+
         if (v[(opc & 0x0F00) >> 8] == (opc & 0x00FF)) {
             programCounter += 4;
         } else {
@@ -270,7 +279,7 @@ public class Chip8 extends Service<Short> {
     // 4000
     private void skipVxNotEqNN(char opc) {
         System.out.println("SKIP IF VX != NN\n");
-        
+
         if (v[(opc & 0x0F00) >> 8] != (opc & 0x00FF)) {
             programCounter += 4;
         } else {
@@ -281,7 +290,7 @@ public class Chip8 extends Service<Short> {
     // 5000
     private void skipVxEqVy(char opc) {
         System.out.println("SKIP IF VX == VY\n");
-        
+
         if (v[(opc & 0x0F00) >> 8] == v[(opc & 0x0F00) >> 8]) {
             programCounter += 4;
         } else {
@@ -292,7 +301,7 @@ public class Chip8 extends Service<Short> {
     // 6000
     private void setVx(char opc) {
         System.out.println("SET VX\n");
-        
+
         v[(opc & 0x0F00) >> 8] = (char) (opc & 0x00FF);
         programCounter += 2;
     }
@@ -300,20 +309,20 @@ public class Chip8 extends Service<Short> {
     // 7000
     private void addNNtoVx(char opc) {
         System.out.println("VX += NN\n");
-        
+
         v[(opc & 0x0F00) >> 8] += (char) (opc & 0x00FF);
         /*
         if (v[(opc & 0x0F00) >> 8] > 255) {
             v[(opc & 0x0F00) >> 8] = 0;
         }
-        */
+         */
         programCounter += 2;
     }
 
     // 8000
     private void setVxTovY(char opc) {
         System.out.println("VX = VY\n");
-        
+
         v[(opc & 0x0F00) >> 8] = v[(opc & 0x00F0) >> 4];
         programCounter += 2;
     }
@@ -321,7 +330,7 @@ public class Chip8 extends Service<Short> {
     // 8001
     private void setVxToVxOrVy(char opc) {
         System.out.println("VX = VX | VY\n");
-        
+
         v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x0F00) >> 8] | v[(opc & 0x00F0) >> 4]);
         programCounter += 2;
     }
@@ -329,7 +338,7 @@ public class Chip8 extends Service<Short> {
     // 8002
     private void setVxToVxAndVy(char opc) {
         System.out.println("VX = VX & VY\n");
-        
+
         v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x0F00) >> 8] & v[(opc & 0x00F0) >> 4]);
         programCounter += 2;
     }
@@ -337,7 +346,7 @@ public class Chip8 extends Service<Short> {
     // 8003
     private void setVxToVxXorVy(char opc) {
         System.out.println("VX = VX ^ VY\n");
-        
+
         v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x0F00) >> 8] ^ v[(opc & 0x00F0) >> 4]);
         programCounter += 2;
     }
@@ -345,65 +354,64 @@ public class Chip8 extends Service<Short> {
     // 8004
     private void addVxToVyCarry(char opc) {
         System.out.println("VX += VY (CARRY)\n");
-        
-        if((v[(opc & 0x0F00) >> 8] + v[(opc & 0x00F0) >> 4]) > 255){
+
+        if ((v[(opc & 0x0F00) >> 8] + v[(opc & 0x00F0) >> 4]) > 255) {
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
         }
-        v[(opc & 0x0F00) >> 8] = (v[(opc & 0x0F00) >> 8] + v[(opc & 0x00F0) >> 4]) & 0xFF;
+        v[(opc & 0x0F00) >> 8] += v[(opc & 0x00F0) >> 4];
         programCounter += 2;
     }
 
     // 8005
     private void subtractVxToVyCarry(char opc) {
         System.out.println("VX -= VY (CARRY)\n");
-        
+
         if (v[(opc & 0x0F00) >> 8] > v[(opc & 0x00F0) >> 4]) {
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
         }
-        v[(opc & 0x00F0) >> 4] -= v[(opc & 0x0F00) >> 8];        
+        v[(opc & 0x00F0) >> 4] -= v[(opc & 0x0F00) >> 8];
         programCounter += 2;
     }
 
-    
     // 8006
     private void shiftRightVyToVx(char opc) {
         System.out.println("VX = VY = VY >> 1, VF = VY LSB\n");
-    
-        v[0xF] = v[(opc & 0x00F0) >> 4] & 0x0F;
-        v[(opc & 0x0F00) >> 8]] = v[(opc & 0x00F0) >> 4] >> 1;
+
+        v[0xF] = (char) (v[(opc & 0x00F0) >> 4] & 0x7);
+        v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x00F0) >> 4] >> 1);
         programCounter += 2;
     }
 
     // 8007
     private void subtractVyAndVx2nd(char opc) {
         System.out.println("VX -= VY (CARRY)(2nd)\n");
-        
+
         if (v[(opc & 0x0F00) >> 8] > v[(opc & 0x00F0) >> 4]) {
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
         }
-        v[(opc & 0x00F0) >> 4] -= v[(opc & 0x0F00) >> 8];        
+        v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x00F0) >> 4] - v[(opc & 0x0F00) >> 8]);
         programCounter += 2;
     }
 
     // 800E
     private void shiftLeftVyToVx(char opc) {
         System.out.println("VX = VY = VY << 1, VF = VY MSB\n");
-    
-        v[0xF] = (v[(opc & 0x00F0) >> 4] & 0xF0) << 4;
-        v[(opc & 0x0F00) >> 8]] = (char) (v[(opc & 0x00F0) >> 4] << 1);
+
+        v[0xF] = (char) (v[(opc & 0x00F0) >> 4] >> 0x7);
+        v[(opc & 0x0F00) >> 8] = (char) (v[(opc & 0x00F0) >> 4] << 1);
         programCounter += 2;
     }
 
     // 9000
     private void skipVxNotEqVy(char opc) {
         System.out.println("SKIP IF VX != VY\n");
-        
+
         if (v[(opc & 0x0F00) >> 8] != v[(opc & 0x00F0) >> 4]) {
             programCounter += 4;
         } else {
@@ -414,30 +422,29 @@ public class Chip8 extends Service<Short> {
     // A000
     private void setI(char opc) {
         System.out.println("SET I\n");
-    
+
         i = (char) (opc & 0x0FFF);
         programCounter += 2;
     }
-    
+
     // B000
     private void goToV0(char opc) {
         System.out.println("GOTO + V0\n");
-        
+
         programCounter = (char) (v[0x0] + (opc & 0x0FFF));
     }
 
     // C000
     private void rand(char opc) {
         System.out.println("RAND\n");
-        
-        v[(opc & 0x0F00) >> 8]] = random.nextInt(255) & (opc & 0x00FF);
+        v[(opc & 0x0F00) >> 8] = (char) (random.nextInt(255) & (opc & 0x00FF));
         programCounter += 2;
     }
 
     // D000
     private void draw(char opc) {
         System.out.println("DRAW\n");
-        
+
         // TODO
         programCounter += 2;
     }
@@ -472,13 +479,12 @@ public class Chip8 extends Service<Short> {
     private void call(char opc) {
 
     }
-    */
-
+     */
     // F01E
     private void addsVxToI(char opc) {
         System.out.println("I += VX\n");
-        
-        i += v[(opc & 0x0F00) >> 8]];
+
+        i += v[(opc & 0x0F00) >> 8];
         programCounter += 2;
     }
 
