@@ -7,9 +7,8 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Paint;
+import javafx.scene.image.ImageView;
 
 public class EmulatorController implements Initializable {
 
@@ -20,14 +19,14 @@ public class EmulatorController implements Initializable {
     @FXML
     private Label label;
     @FXML
-    private Canvas screen;
+    private ImageView screen;
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws Exception {
         System.out.println("You clicked me!");
         label.setText("Hello World!");
 
-        chip8 = new Chip8(cpuSpeed, program, screen.getGraphicsContext2D());
+        chip8 = new Chip8(cpuSpeed, program, screen);
         chip8.start();
     }
 

@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.ImageView;
 
 public class Chip8 extends Service<Short> {
 
@@ -62,7 +63,7 @@ public class Chip8 extends Service<Short> {
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
 
-    public Chip8(short cpuSpeed, File program, GraphicsContext screen) throws Exception {
+    public Chip8(short cpuSpeed, File program, ImageView screen) throws Exception {
         this.cpuSpeed = cpuSpeed;
         this.display = new Display(screen);
 
