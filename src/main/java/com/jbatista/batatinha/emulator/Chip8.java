@@ -300,9 +300,11 @@ public class Chip8 extends Service<Short> {
         System.out.println("VX += NN\n");
         
         v[(opc & 0x0F00) >> 8] += (char) (opc & 0x00FF);
+        /*
         if (v[(opc & 0x0F00) >> 8] > 255) {
             v[(opc & 0x0F00) >> 8] = 0;
         }
+        */
         programCounter += 2;
     }
 
@@ -342,13 +344,12 @@ public class Chip8 extends Service<Short> {
     private void addVxToVyCarry(char opc) {
         System.out.println("VX += VY (CARRY)\n");
         
-        v[(opc & 0x0F00) >> 8] += v[(opc & 0x00F0) >> 8];
-        if (v[(opc & 0x0F00) >> 8] > 255) {
-            v[(opc & 0x0F00) >> 8] = 0;
+        if((v[(opc & 0x0F00) >> 8] + v[(opc & 0x00F0) >> 8]) > 255){
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
         }
+        v[(opc & 0x0F00) >> 8] = (v[(opc & 0x0F00) >> 8] + v[(opc & 0x00F0) >> 8]) & 0xFF;
         programCounter += 2;
     }
 
@@ -356,13 +357,12 @@ public class Chip8 extends Service<Short> {
     private void subtractVxToVyCarry(char opc) {
         System.out.println("VX -= VY (CARRY)\n");
         
-        v[(opc & 0x0F00) >> 8] -= v[(opc & 0x00F0) >> 8];
-        if (v[(opc & 0x0F00) >> 8] < 0) {
-            v[(opc & 0x0F00) >> 8] = 0;
+        if (v[(opc & 0x0F00) >> 8] > v[(opc & 0x00F0) >> 8]) {
             v[0xF] = 1;
         } else {
             v[0xF] = 0;
         }
+        v[(opc & 0x00F0) >> 8] -= v[(opc & 0x0F00) >> 8];        
         programCounter += 2;
     }
 
