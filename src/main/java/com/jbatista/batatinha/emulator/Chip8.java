@@ -66,10 +66,10 @@ public class Chip8 {
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
 
-    public Chip8(short cpuSpeed, File program, ImageView screen) {
+    public Chip8(short cpuSpeed, File program, ImageView screen, int scale) {
         this.program = program;
         this.cpuSpeed = cpuSpeed;
-        this.display = new Display(screen, v);
+        this.display = new Display(screen, v, scale);
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
         // debug

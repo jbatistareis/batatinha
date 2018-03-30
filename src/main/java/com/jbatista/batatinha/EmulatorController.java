@@ -41,7 +41,7 @@ public class EmulatorController implements Initializable {
             lbCPUSpeed.setText(decimalFormat.format(slCPUSpeed.valueProperty().get()) + "Hz");
         });
 
-        chip8 = new Chip8((short) slCPUSpeed.getValue(), program, screen);
+        chip8 = new Chip8((short) slCPUSpeed.getValue(), program, screen, 7);
     }
 
     @FXML

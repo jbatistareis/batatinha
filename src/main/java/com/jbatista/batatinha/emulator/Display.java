@@ -1,6 +1,5 @@
 package com.jbatista.batatinha.emulator;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -10,17 +9,22 @@ import javafx.scene.paint.Color;
 
 public class Display {
 
-    private final WritableImage image = new WritableImage(450, 225);
-    private final PixelReader reader = image.getPixelReader();
-    private final PixelWriter writer = image.getPixelWriter();
+    private final WritableImage image;
+    private final PixelReader reader;
+    private final PixelWriter writer;
     private final List<Character> v;
     private int x;
     private int y;
     private int scale;
 
-    public Display(ImageView screen, List<Character> v) {
+    public Display(ImageView screen, List<Character> v, int scale) {
         this.v = v;
-        this.scale = Integer.valueOf(new DecimalFormat("#").format(image.getWidth() / 64));
+        this.scale = scale;
+
+        image = new WritableImage(64 * scale, 32 * scale);
+        reader = image.getPixelReader();
+        writer = image.getPixelWriter();
+
         screen.setImage(image);
 
         clear();

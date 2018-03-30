@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
+<BorderPane style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
    <right>
-      <GridPane hgap="5.0" maxHeight="225.0" maxWidth="225.0" minHeight="225.0" minWidth="225.0" style="-fx-background-color: #000000;" vgap="5.0" BorderPane.alignment="CENTER">
+      <GridPane hgap="5.0" maxHeight="225.0" maxWidth="225.0" minHeight="225.0" minWidth="225.0" vgap="5.0" BorderPane.alignment="CENTER">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
@@ -54,9 +54,9 @@
       </GridPane>
    </right>
    <center>
-      <ImageView fx:id="screen" cache="true" cacheHint="SPEED" depthTest="DISABLE" fitHeight="225.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+      <ImageView fx:id="screen" cache="true" cacheHint="SPEED" depthTest="DISABLE" pickOnBounds="true" preserveRatio="true" smooth="false" BorderPane.alignment="CENTER">
          <BorderPane.margin>
-            <Insets />
+            <Insets bottom="5.0" left="5.0" />
          </BorderPane.margin>
       </ImageView>
    </center>
