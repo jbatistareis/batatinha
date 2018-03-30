@@ -3,16 +3,80 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
-   <children>
-      <ImageView fx:id="screen" fitHeight="32.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" />
-        <Button fx:id="button" onAction="#handleButtonAction" text="Click Me!" />
-        <Label fx:id="label" minHeight="16" minWidth="69" />
-   </children>
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
-</VBox>
+
+<BorderPane xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
+   <right>
+      <GridPane hgap="5.0" maxHeight="225.0" maxWidth="225.0" minHeight="225.0" minWidth="225.0" style="-fx-background-color: #000000;" vgap="5.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button fx:id="btn1" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="1" textAlignment="CENTER" textFill="WHITE" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn2" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="2" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn3" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="3" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnC" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #ff6666;" text="C" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn4" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="4" textFill="WHITE" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn5" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="5" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn6" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="6" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnD" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #ff6666;" text="D" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn7" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="7" textFill="WHITE" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn8" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="8" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn9" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="9" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnE" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #ff6666;" text="E" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnA" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #ff6666;" text="A" textFill="WHITE" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn0" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #66b3ff;" text="0" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnB" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #ff6666;" text="B" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnF" alignment="CENTER" contentDisplay="CENTER" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#pressButton" style="-fx-font-size: 24; -fx-background-color: #ff6666;" text="F" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </GridPane>
+   </right>
+   <center>
+      <ImageView fx:id="screen" cache="true" cacheHint="SPEED" depthTest="DISABLE" fitHeight="225.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </ImageView>
+   </center>
+   <top>
+      <ToolBar BorderPane.alignment="CENTER">
+        <items>
+          <Button mnemonicParsing="false" onAction="#startVM" text="Load" textAlignment="CENTER" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="About" textAlignment="CENTER" />
+            <HBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <Label text="CPU speed:" />
+                  <Slider fx:id="slCPUSpeed" blockIncrement="100.0" majorTickUnit="100.0" max="1000.0" min="500.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="500.0" />
+                  <Label fx:id="lbCPUSpeed" text="500Hz" />
+               </children>
+            </HBox>
+        </items>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </ToolBar>
+   </top>
+</BorderPane>

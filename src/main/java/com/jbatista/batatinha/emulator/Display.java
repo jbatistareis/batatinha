@@ -1,5 +1,6 @@
 package com.jbatista.batatinha.emulator;
 
+import java.util.List;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -11,19 +12,20 @@ public class Display {
     private final WritableImage image = new WritableImage(64, 32);
     private final PixelReader reader = image.getPixelReader();
     private final PixelWriter writer = image.getPixelWriter();
-    private final char[] v;
+    private final List<Character> v;
     private int x;
     private int y;
 
-    public Display(ImageView screen, char[] v) {
+    public Display(ImageView screen, List<Character> v) {
         this.v = v;
         screen.setImage(image);
         clear();
     }
 
     public void draw(char opcode, char[] data) {
-        x = v[(opcode & 0x0F00) >> 8];
-        y = v[(opcode & 0x00F0) >> 4];
+        x = v.get((opcode & 0x0F00) >> 8);
+        y = v.get((opcode & 0x00F0) >> 4);
+        v.set(0xf, (char) 0x0);
 
         for (int py = 0; py < data.length; py++) {
             for (int px = 0; px < 8; px++) {
@@ -31,7 +33,7 @@ public class Display {
                     if (reader.getColor(x + px, y + py).equals(Color.BLACK)) {
                         writer.setColor(x + px, y + py, Color.WHITE);
                     } else {
-                        v[0xf] = 1;
+                        v.set(0xf, (char) 0x1);
                         writer.setColor(x + px, y + py, Color.BLACK);
                     }
                 }
@@ -40,8 +42,8 @@ public class Display {
     }
 
     public void clear() {
-        for (int x = 63; x >= 0; x--) {
-            for (int y = 0; y <= 31; y++) {
+        for (int y = 0; y <= 31; y++) {
+            for (int x = 63; x >= 0; x--) {
                 writer.setColor(x, y, Color.BLACK);
             }
         }
