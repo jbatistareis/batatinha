@@ -1,33 +1,34 @@
 package com.jbatista.batatinha.emulator;
 
+import com.jbatista.batatinha.MainApp;
 import com.jbatista.batatinha.emulator.Input.Key;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.scene.image.ImageView;
 
-public class Chip8 extends Service<Short> {
+public class Chip8 {
 
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    private File program;
     private final Random random = new Random();
     private final short cpuSpeed;
-    private short cycle = 0;
+    private final ReadOnlyIntegerWrapper cycle = new ReadOnlyIntegerWrapper(1);
 
     // CPU, memory, registers, font
-    private char opcode = 0;
+    private char opcode;
     private final char[] memory = new char[4096];
     private final char[] v = new char[16];
-    private char i = 0;
-    private char programCounter = 512;
+    private char i;
+    private char programCounter;
     // hardcoded font
     private final char[] font = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -48,41 +49,26 @@ public class Chip8 extends Service<Short> {
         0xF0, 0x80, 0xF0, 0x80, 0x80 // F
     };
 
-    // GO TO stack
+    // jump to routine stack
     private final char[] stack = new char[16];
-    private char stackPointer = 0;
+    private char stackPointer;
 
     // timers
-    private short soundTimer = 0;
-    private short delayTimer = 0;
+    private ReadOnlyIntegerWrapper soundTimer = new ReadOnlyIntegerWrapper(0);
+    private ReadOnlyIntegerWrapper delayTimer = new ReadOnlyIntegerWrapper(0);
 
     // auxiliary
+    private ScheduledFuture timer60Hz;
+    private ScheduledFuture timerCPU;
     private final Display display;
     private final Input input = new Input();
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
 
-    public Chip8(short cpuSpeed, File program, ImageView screen) throws Exception {
+    public Chip8(short cpuSpeed, File program, ImageView screen) {
+        this.program = program;
         this.cpuSpeed = cpuSpeed;
         this.display = new Display(screen, v);
-
-        Arrays.fill(v, (char) 0);
-        Arrays.fill(stack, (char) 0);
-
-        // load font
-        for (int i = 0; i < 80; i++) {
-            memory[i] = font[i];
-        }
-
-        // load program
-        final FileInputStream fileInputStream = new FileInputStream(program);
-        int data;
-        int index = 0;
-        while ((data = fileInputStream.read()) != -1) {
-            memory[index + 512] = (char) data;
-            index++;
-        }
-        fileInputStream.close();
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
         // debug
@@ -128,44 +114,52 @@ public class Chip8 extends Service<Short> {
         // </editor-fold>
     }
 
-    @Override
-    protected Task<Short> createTask() {
-        return new Task<Short>() {
-            @Override
-            protected Short call() throws Exception {
-                // 60Hz timer
-                executor.scheduleWithFixedDelay(() -> {
-                    timerTick();
-                }, 1000 / 60, 1000 / 60, TimeUnit.MILLISECONDS);
+    public void start() throws IOException {
+        if (timer60Hz != null) {
+            timer60Hz.cancel(true);
+        }
+        if (timerCPU != null) {
+            timerCPU.cancel(true);
+        }
 
-                // CPU timer
-                executor.scheduleWithFixedDelay(() -> {
-                    cpuTick();
-                    updateValue(changeCycle());
-                }, 1000 / cpuSpeed, 1000 / cpuSpeed, TimeUnit.MILLISECONDS);
-
-                while (true) {
-                }
-            }
-        };
-    }
-
-    @Override
-    public void restart() {
         Arrays.fill(v, (char) 0);
+        Arrays.fill(memory, (char) 0);
         i = 0;
         programCounter = 512;
         Arrays.fill(stack, (char) 0);
         stackPointer = 0;
-        soundTimer = 0;
-        delayTimer = 0;
-        super.restart();
+        soundTimer.set(0);
+        delayTimer.set(0);
+
+        // load font
+        for (int i = 0; i < 80; i++) {
+            memory[i] = font[i];
+        }
+
+        // load program
+        final FileInputStream fileInputStream = new FileInputStream(program);
+        int data;
+        int index = 0;
+        while ((data = fileInputStream.read()) != -1) {
+            memory[index + 512] = (char) data;
+            index++;
+        }
+        fileInputStream.close();
+
+        // 60Hz timer
+        timer60Hz = MainApp.executor.scheduleWithFixedDelay(() -> {
+            timerTick();
+        }, 1000 / 60, 1000 / 60, TimeUnit.MILLISECONDS);
+
+        // CPU timer
+        timerCPU = MainApp.executor.scheduleWithFixedDelay(() -> {
+            cpuTick();
+        }, 1000 / cpuSpeed, 1000 / cpuSpeed, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public boolean cancel() {
-        executor.shutdownNow();
-        return super.cancel();
+    public void shutdown() {
+        timer60Hz.cancel(true);
+        timerCPU.cancel(true);
     }
 
     // 500Hz ~ 1000Hz
@@ -192,27 +186,71 @@ public class Chip8 extends Service<Short> {
         } else {
             System.out.println("UNKNOWN OPCODE - 0x" + Integer.toHexString(decodedOpcode).toUpperCase());
         }
+
+        changeCycle();
     }
 
     // 60Hz
     private void timerTick() {
-        if (soundTimer > 0) {
-            soundTimer--;
+        if (soundTimer.get() > 0) {
+            soundTimer.subtract(1);
         }
 
-        if (delayTimer > 0) {
-            delayTimer--;
+        if (delayTimer.get() > 0) {
+            delayTimer.subtract(1);
         }
     }
 
-    private short changeCycle() {
-        if (cycle > cpuSpeed) {
-            cycle = 0;
+    private void changeCycle() {
+        if (cycle.get() > cpuSpeed) {
+            cycle.set(1);
         } else {
-            cycle++;
+            cycle.add(1);
         }
+    }
 
-        return cycle;
+    public ReadOnlyIntegerProperty getCycle() {
+        return cycle.getReadOnlyProperty();
+    }
+
+    public char[] getV() {
+        return v;
+    }
+
+    public char[] getMemory() {
+        return memory;
+    }
+
+    public char getOpcode() {
+        return opcode;
+    }
+
+    public char getDecodedOpcode() {
+        return decodedOpcode;
+    }
+
+    public char getI() {
+        return i;
+    }
+
+    public char getProgramCounter() {
+        return programCounter;
+    }
+
+    public char[] getStack() {
+        return stack;
+    }
+
+    public char getStackPointer() {
+        return stackPointer;
+    }
+
+    public ReadOnlyIntegerProperty getSoundTimer() {
+        return soundTimer.getReadOnlyProperty();
+    }
+
+    public ReadOnlyIntegerProperty getDelayTimer() {
+        return delayTimer.getReadOnlyProperty();
     }
 
     public void keyPress(Key key) {

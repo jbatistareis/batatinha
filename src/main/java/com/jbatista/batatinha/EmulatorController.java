@@ -35,10 +35,4 @@ public class EmulatorController implements Initializable {
         // TODO
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        chip8.cancel();
-        super.finalize();
-    }
-
 }
