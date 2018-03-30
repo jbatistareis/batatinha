@@ -173,11 +173,15 @@ public class Chip8 extends Service<Short> {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
 
-        // special cases, since the 00 at the beginning is omitted by java
+        // special cases
         if (opcode == 0xEE) {
             decodedOpcode = 0x00EE;
         } else if (opcode == 0xE0) {
             decodedOpcode = 0x00E0;
+        } else if (decodedOpcode == 0x8000) {
+            decodedOpcode = (char) (opcode & 0xF00F);
+        } else if ((decodedOpcode == 0xE000) || (decodedOpcode == 0xF000)) {
+            decodedOpcode = (char) (opcode & 0xF0FF);
         }
 
         System.out.println("OPC: 0x" + Integer.toHexString(opcode).toUpperCase());
