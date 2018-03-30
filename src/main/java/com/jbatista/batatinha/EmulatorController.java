@@ -24,7 +24,7 @@ public class EmulatorController implements Initializable {
     @FXML
     private Label lbCPUSpeed;
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "Zero Demo [zeroZshadow, 2007].ch8");
+    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
     private Chip8 chip8;
     private final DecimalFormat decimalFormat = new DecimalFormat("#");
 

@@ -12,7 +12,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
 <BorderPane xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
    <right>
       <GridPane hgap="5.0" maxHeight="225.0" maxWidth="225.0" minHeight="225.0" minWidth="225.0" style="-fx-background-color: #000000;" vgap="5.0" BorderPane.alignment="CENTER">
