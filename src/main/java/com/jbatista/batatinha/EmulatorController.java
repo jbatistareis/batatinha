@@ -23,9 +23,10 @@ public class EmulatorController implements Initializable {
     @FXML
     private Label lbCPUSpeed;
 
-    private final AnimationTimer animationTimer;
     private File program = new File("D:\\Users\\joao\\Desktop", "ZERO");
     private Chip8 chip8;
+
+    private final AnimationTimer animationTimer;
     private final DecimalFormat decimalFormat = new DecimalFormat("#");
 
     public EmulatorController() {
@@ -49,8 +50,8 @@ public class EmulatorController implements Initializable {
     @FXML
     private void startVM(ActionEvent event) throws Exception {
         animationTimer.stop();
-        chip8.start();
         animationTimer.start();
+        chip8.start();
     }
 
     @FXML
