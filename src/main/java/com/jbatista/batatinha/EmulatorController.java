@@ -5,8 +5,7 @@ import java.io.File;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,16 +23,19 @@ public class EmulatorController implements Initializable {
     @FXML
     private Label lbCPUSpeed;
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
+    private final AnimationTimer animationTimer;
+    private File program = new File("D:\\Users\\joao\\Desktop", "ZERO");
     private Chip8 chip8;
     private final DecimalFormat decimalFormat = new DecimalFormat("#");
 
-    private final ChangeListener<Number> cycleListener = new ChangeListener<Number>() {
-        @Override
-        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            // TODO
-        }
-    };
+    public EmulatorController() {
+        animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                screen.setImage(chip8.getImage());
+            }
+        };
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -41,15 +43,14 @@ public class EmulatorController implements Initializable {
             lbCPUSpeed.setText(decimalFormat.format(slCPUSpeed.valueProperty().get()) + "Hz");
         });
 
-        chip8 = new Chip8((short) slCPUSpeed.getValue(), program, screen, 7);
+        chip8 = new Chip8((short) slCPUSpeed.getValue(), program, 7);
     }
 
     @FXML
     private void startVM(ActionEvent event) throws Exception {
+        animationTimer.stop();
         chip8.start();
-
-        chip8.getCycle().removeListener(cycleListener);
-        chip8.getCycle().addListener(cycleListener);
+        animationTimer.start();
     }
 
     @FXML

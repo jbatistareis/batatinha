@@ -1,7 +1,7 @@
 package com.jbatista.batatinha.emulator;
 
 import java.util.List;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -17,15 +17,13 @@ public class Display {
     private int y;
     private int scale;
 
-    public Display(ImageView screen, List<Character> v, int scale) {
+    public Display(List<Character> v, int scale) {
         this.v = v;
         this.scale = scale;
 
         image = new WritableImage(64 * scale, 32 * scale);
         reader = image.getPixelReader();
         writer = image.getPixelWriter();
-
-        screen.setImage(image);
 
         clear();
     }
@@ -63,6 +61,10 @@ public class Display {
                 writer.setColor(x, y, Color.BLACK);
             }
         }
+    }
+
+    public Image getImage() {
+        return image;
     }
 
 }
