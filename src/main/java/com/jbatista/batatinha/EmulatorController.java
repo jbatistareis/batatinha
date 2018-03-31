@@ -54,7 +54,7 @@ public class EmulatorController implements Initializable {
 
     @FXML
     private void pressButton(ActionEvent event) throws Exception {
-        System.out.println(((Button) event.getSource()).getText());
+        chip8.toggleKey(((Button) event.getSource()).getText());
     }
 
 }
