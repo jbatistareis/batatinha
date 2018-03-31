@@ -1,7 +1,6 @@
 package com.jbatista.batatinha.emulator;
 
 import com.jbatista.batatinha.MainApp;
-import com.jbatista.batatinha.emulator.Input.Key;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -99,12 +98,12 @@ public class Chip8 {
         opcodesMap.put((char) 0xB000, this::goToV0);
         opcodesMap.put((char) 0xC000, this::rand);
         opcodesMap.put((char) 0xD000, this::draw);
-        opcodesMap.put((char) 0xE09E, this::printOpcode);
-        opcodesMap.put((char) 0xE0A1, this::printOpcode);
-        opcodesMap.put((char) 0xF007, this::printOpcode);
-        opcodesMap.put((char) 0xF00A, this::printOpcode);
-        opcodesMap.put((char) 0xF015, this::printOpcode);
-        opcodesMap.put((char) 0xF018, this::printOpcode);
+        opcodesMap.put((char) 0xE09E, this::vxEqKey);
+        opcodesMap.put((char) 0xE0A1, this::vxNotEqKey);
+        opcodesMap.put((char) 0xF007, this::vxToDelay);
+        opcodesMap.put((char) 0xF00A, this::waitKey);
+        opcodesMap.put((char) 0xF015, this::setDelayTimer);
+        opcodesMap.put((char) 0xF018, this::setSoundTimer);
         opcodesMap.put((char) 0xF01E, this::addsVxToI);
         opcodesMap.put((char) 0xF029, this::printOpcode);
         opcodesMap.put((char) 0xF033, this::printOpcode);
@@ -116,8 +115,6 @@ public class Chip8 {
     }
 
     public void start() throws IOException {
-        cycle.set(1);
-
         if (timer60Hz != null) {
             timer60Hz.cancel(true);
         }
@@ -125,6 +122,7 @@ public class Chip8 {
             timerCPU.cancel(true);
         }
 
+        cycle.set(1);
         v.clear();
         stack.clear();
         memory.clear();
@@ -204,11 +202,11 @@ public class Chip8 {
     // 60Hz
     private void timerTick() {
         if (soundTimer.get() > 0) {
-            soundTimer.subtract(1);
+            soundTimer.set(soundTimer.get() - 1);
         }
 
         if (delayTimer.get() > 0) {
-            delayTimer.subtract(1);
+            delayTimer.set(delayTimer.get() - 1);
         }
     }
 
@@ -264,8 +262,8 @@ public class Chip8 {
         return delayTimer.getReadOnlyProperty();
     }
 
-    public void keyPress(Key key) {
-        input.register(key);
+    public void toggleKey(String key) {
+        input.toggleKey((char) Integer.parseInt("0x" + key));
     }
 
     // <editor-fold defaultstate="collapsed" desc="opcode methods, double click to expand (Netbeans)">
@@ -301,14 +299,14 @@ public class Chip8 {
         stackPointer--;
     }
 
-    // 1000
+    // 1NNN
     private void goTo(char opc) {
         // System.out.println("GOTO\n");
 
         programCounter = (char) (opc & 0x0FFF);
     }
 
-    // 2000
+    // 2NNN
     private void callSubroutine(char opc) {
         // System.out.println("CALL SUBROUTINE\n");
 
@@ -317,7 +315,7 @@ public class Chip8 {
         programCounter = (char) (opc & 0x0FFF);
     }
 
-    // 3000
+    // 3XNN
     private void skipVxEqNN(char opc) {
         // System.out.println("SKIP IF VX == NN\n");
 
@@ -328,7 +326,7 @@ public class Chip8 {
         }
     }
 
-    // 4000
+    // 4XNN
     private void skipVxNotEqNN(char opc) {
         // System.out.println("SKIP IF VX != NN\n");
 
@@ -339,18 +337,18 @@ public class Chip8 {
         }
     }
 
-    // 5000
+    // 5XY0
     private void skipVxEqVy(char opc) {
         // System.out.println("SKIP IF VX == VY\n");
 
-        if (v.get((opc & 0x0F00) >> 8) == v.get((opc & 0x0F00) >> 8)) {
+        if (v.get((opc & 0x0F00) >> 8) == v.get((opc & 0x00F0) >> 4)) {
             programCounter += 4;
         } else {
             programCounter += 2;
         }
     }
 
-    // 6000
+    // 6XNN
     private void setVx(char opc) {
         // System.out.println("SET VX\n");
 
@@ -358,7 +356,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 7000
+    // 7XNN
     private void addNNtoVx(char opc) {
         // System.out.println("VX += NN\n");
 
@@ -366,7 +364,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8000
+    // 8XY0
     private void setVxTovY(char opc) {
         // System.out.println("VX = VY\n");
 
@@ -374,7 +372,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8001
+    // 8XY1
     private void setVxToVxOrVy(char opc) {
         // System.out.println("VX = VX | VY\n");
 
@@ -382,7 +380,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8002
+    // 8XY2
     private void setVxToVxAndVy(char opc) {
         // System.out.println("VX = VX & VY\n");
 
@@ -390,7 +388,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8003
+    // 8XY3
     private void setVxToVxXorVy(char opc) {
         // System.out.println("VX = VX ^ VY\n");
 
@@ -398,7 +396,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8004
+    // 8XY4
     private void addVxToVyCarry(char opc) {
         // System.out.println("VX += VY (CARRY)\n");
 
@@ -411,7 +409,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8005
+    // 8XY5
     private void subtractVxToVyCarry(char opc) {
         // System.out.println("VX -= VY (CARRY)\n");
 
@@ -424,7 +422,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8006
+    // 8XY6
     private void shiftRightVyToVx(char opc) {
         // System.out.println("VX = VY = VY >> 1, VF = VY LSB\n");
 
@@ -433,7 +431,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 8007
+    // 8XY7
     private void subtractVyAndVx2nd(char opc) {
         // System.out.println("VX -= VY (CARRY)(2nd)\n");
 
@@ -446,7 +444,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 800E
+    // 8XYE
     private void shiftLeftVyToVx(char opc) {
         // System.out.println("VX = VY = VY << 1, VF = VY MSB\n");
 
@@ -455,7 +453,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // 9000
+    // 9XY0
     private void skipVxNotEqVy(char opc) {
         // System.out.println("SKIP IF VX != VY\n");
 
@@ -466,7 +464,7 @@ public class Chip8 {
         }
     }
 
-    // A000
+    // ANNN
     private void setI(char opc) {
         // System.out.println("SET I\n");
 
@@ -474,21 +472,21 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // B000
+    // BNNN
     private void goToV0(char opc) {
         // System.out.println("GOTO + V0\n");
 
         programCounter = (char) (v.get(0x0) + (opc & 0x0FFF));
     }
 
-    // C000
+    // CXNN
     private void rand(char opc) {
         // System.out.println("RAND\n");
         v.set((opc & 0x0F00) >> 8, (char) (random.nextInt(255) & (opc & 0x00FF)));
         programCounter += 2;
     }
 
-    // D000
+    // DXYN
     private void draw(char opc) {
         // System.out.println("DRAW\n");
 
@@ -501,38 +499,54 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    /*
-    // E09E
-    private void call(char opc) {
-
+    // EX9E
+    private void vxEqKey(char opc) {
+        if (input.isPressed((char) ((opc & 0x0F00) >> 8))) {
+            programCounter += 4;
+        } else {
+            programCounter += 2;
+        }
     }
 
-    // E0A1
-    private void call(char opc) {
-
+    // EXA1
+    private void vxNotEqKey(char opc) {
+        if (!input.isPressed((char) ((opc & 0x0F00) >> 8))) {
+            programCounter += 4;
+        } else {
+            programCounter += 2;
+        }
     }
 
-    // F007
-    private void call(char opc) {
-
+    // FX07
+    private void vxToDelay(char opc) {
+        v.set((opc & 0x0F00) >> 8, (char) delayTimer.get());
+        programCounter += 2;
     }
 
-    // F00A
-    private void call(char opc) {
+    // FX0A
+    private void waitKey(char opc) {
+        input.resetPressResgister();
 
+        // blocks with an infinite loop
+        while (!input.pressRegistred()) {
+        }
+
+        v.set((opc & 0x0F00) >> 8, input.getLastKey());
+        input.resetPressResgister();
+        programCounter += 2;
     }
 
-    // F015
-    private void call(char opc) {
-
+    // FX15
+    private void setDelayTimer(char opc) {
+        delayTimer.set((opc & 0x0F00) >> 8);
     }
 
-    // F018
-    private void call(char opc) {
-
+    // FX18
+    private void setSoundTimer(char opc) {
+        soundTimer.set((opc & 0x0F00) >> 8);
     }
-     */
-    // F01E
+
+    // FX1E
     private void addsVxToI(char opc) {
         // System.out.println("I += VX\n");
 
@@ -541,22 +555,22 @@ public class Chip8 {
     }
 
     /*
-    // F029
+    // FX29
     private void call(char opc) {
 
     }
 
-    // F033
+    // FX33
     private void call(char opc) {
 
     }
 
-    // F055
+    // FX55
     private void call(char opc) {
 
     }
 
-    // F065
+    // FX65
     private void call(char opc) {
 
      */

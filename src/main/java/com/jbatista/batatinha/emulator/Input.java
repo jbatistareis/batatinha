@@ -1,26 +1,42 @@
 package com.jbatista.batatinha.emulator;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Input {
 
-    private final char[] keyState = new char[16];
-
-    public enum Key {
-        n0, n1, n2, n3, n4, n5, n6, n7, n8, k9, A, B, C, D, E, F
-    }
+    private boolean pressRegistred;
+    private char lastKey;
+    private final Map<Character, Boolean> keyMap = new HashMap<>();
 
     public Input() {
-        //zero fill
-        Arrays.fill(keyState, (char) 0x0);
+        for (int i = 0; i < 16; i++) {
+            keyMap.put((char) i, false);
+        }
     }
 
-    public void register(Key key) {
-
+    public void toggleKey(Character key) {
+        // put returns the previous value
+        if (!keyMap.put(key, !keyMap.get(key))) {
+            pressRegistred = true;
+            lastKey = key;
+        }
     }
 
-    public char[] getKeyState() {
-        return keyState;
+    public boolean isPressed(Character key) {
+        return keyMap.get(key);
+    }
+
+    public boolean pressRegistred() {
+        return pressRegistred;
+    }
+
+    public char getLastKey() {
+        return lastKey;
+    }
+
+    public void resetPressResgister() {
+        pressRegistred = false;
     }
 
 }
