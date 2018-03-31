@@ -23,7 +23,7 @@ public class EmulatorController implements Initializable {
     @FXML
     private Label lbCPUSpeed;
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "ZERO");
+    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
     private Chip8 chip8;
 
     private final AnimationTimer animationTimer;

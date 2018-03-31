@@ -1,5 +1,6 @@
 package com.jbatista.batatinha.emulator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.scene.image.Image;
@@ -11,15 +12,14 @@ public class Display {
 
     private final WritableImage image;
     private final PixelWriter writer;
-    private final List<Character> v;
+    private final char[] v;
     private final char[] buffer = new char[2048];
-    private int x;
-    private int y;
+    private final List<Character> sprite = new ArrayList<>();
     private int imgX;
     private int imgY;
     private int scale;
 
-    public Display(List<Character> v, int scale) {
+    public Display(char[] v, int scale) {
         this.v = v;
         this.scale = scale;
 
@@ -29,25 +29,29 @@ public class Display {
         clear();
     }
 
-    public void draw(char opcode, char[] data) {
-        x = v.get((opcode & 0x0F00) >> 8);
-        y = v.get((opcode & 0x00F0) >> 4);
-        v.set(0xf, (char) 0x0);
+    public void draw(int vx, int vy) {
+        v[0xF] = 0x0;
 
-        for (int py = 0; py < data.length; py++) {
+        for (int py = 0; py < sprite.size(); py++) {
             for (int px = 0; px < 8; px++) {
-                if ((data[py] & (0x80 >> px)) != 0) {
-                    if (buffer[(x + px + ((y + py) * 64))] == 1) {
-                        v.set(0xF, (char) 1);
+                if ((sprite.get(py) & (0x80 >> px)) != 0) {
+                    if (buffer[(v[vx] + px + ((v[vy] + py) * 64))] == 1) {
+                        v[0xF] = 1;
                     }
-                    buffer[x + px + ((y + py) * 64)] ^= 1;
+                    buffer[v[vx] + px + ((v[vy] + py) * 64)] ^= 1;
                 }
             }
         }
+
+        sprite.clear();
     }
 
     public void clear() {
         Arrays.fill(buffer, (char) 0);
+    }
+
+    public void addSpriteData(char data) {
+        sprite.add(data);
     }
 
     public Image getImage() {
