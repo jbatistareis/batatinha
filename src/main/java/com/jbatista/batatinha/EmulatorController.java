@@ -58,7 +58,7 @@ public class EmulatorController implements Initializable {
     private Button btnF;
     // </ editor-fold>
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "TANK");
+    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
     private Chip8 chip8;
 
     private final AnimationTimer animationTimer;
