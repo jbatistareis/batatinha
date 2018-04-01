@@ -35,9 +35,9 @@ public class Display {
         collision = 0;
 
         for (int py = 0; py < sprite.size(); py++) {
-            yPos = ((yPos = y + py) > 31) ? (yPos - 31) : yPos;
+            yPos = (y + py) % 32;
             for (int px = 0; px < 8; px++) {
-                xPos = ((xPos = x + px) > 63) ? (xPos - 63) : xPos;
+                xPos = (x + px) % 64;
                 if ((sprite.get(py) & (0x80 >> px)) != 0) {
                     pixel = xPos + (yPos * 64);
                     if (buffer[pixel] == 1) {
