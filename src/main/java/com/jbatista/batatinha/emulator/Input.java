@@ -1,30 +1,26 @@
 package com.jbatista.batatinha.emulator;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Input {
 
     private boolean pressRegistred;
     private char lastKey;
-    private final Map<Character, Boolean> keyMap = new HashMap<>();
-
-    public Input() {
-        for (int i = 0; i < 16; i++) {
-            keyMap.put((char) i, false);
-        }
-    }
+    private final Set<Character> pressedKeys = new HashSet<>(16);
 
     public void toggleKey(Character key) {
-        // put returns the previous value
-        if (!keyMap.put(key, !keyMap.get(key))) {
+        if (!pressedKeys.contains(key)) {
+            pressedKeys.add(key);
             pressRegistred = true;
             lastKey = key;
+        } else {
+            pressedKeys.remove(key);
         }
     }
 
     public boolean isPressed(Character key) {
-        return keyMap.get(key);
+        return pressedKeys.contains(key);
     }
 
     public boolean pressRegistred() {
