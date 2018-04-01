@@ -148,12 +148,12 @@ public class Chip8 {
         // 60Hz timer
         timer60Hz = MainApp.executor.scheduleWithFixedDelay(() -> {
             timerTick();
-        }, 1000 / 60, 1000 / 60, TimeUnit.MILLISECONDS);
+        }, 16666, 16666, TimeUnit.MICROSECONDS);
 
         // CPU timer
         timerCPU = MainApp.executor.scheduleWithFixedDelay(() -> {
             cpuTick();
-        }, 1000 / cpuSpeed, 1000 / cpuSpeed, TimeUnit.MILLISECONDS);
+        }, 1000000 / cpuSpeed, 1000000 / cpuSpeed, TimeUnit.MICROSECONDS);
     }
 
     public void shutdown() {

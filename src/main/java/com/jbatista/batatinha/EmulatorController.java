@@ -58,7 +58,7 @@ public class EmulatorController implements Initializable {
     private Button btnF;
     // </ editor-fold>
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
+    private File program = new File("D:\\Users\\joao\\Desktop", "TANK");
     private Chip8 chip8;
 
     private final AnimationTimer animationTimer;
@@ -193,13 +193,15 @@ public class EmulatorController implements Initializable {
             }
         });
         // </ editor-fold>
-
-        chip8 = new Chip8((short) slCPUSpeed.getValue(), program, 7);
     }
 
     @FXML
     private void startVM(ActionEvent event) throws Exception {
         animationTimer.stop();
+        if (chip8 != null) {
+            chip8.shutdown();
+        }
+        chip8 = new Chip8((short) slCPUSpeed.valueProperty().get(), program, 7);
         animationTimer.start();
         chip8.start();
     }
