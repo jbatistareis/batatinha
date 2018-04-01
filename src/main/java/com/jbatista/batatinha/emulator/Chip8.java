@@ -57,6 +57,8 @@ public class Chip8 {
     private ScheduledFuture timer60Hz;
     private ScheduledFuture timerCPU;
     private final Display display;
+    private final Buzzer buzzer = new Buzzer();
+    private boolean beep;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
     private char tempResult;
@@ -186,11 +188,14 @@ public class Chip8 {
     // 60Hz
     private void timerTick() {
         if (soundTimer > 0) {
-            soundTimer++;
+            if ((--soundTimer == 0) && beep) {
+                buzzer.beep();
+                beep = false;
+            }
         }
 
         if (delayTimer > 0) {
-            delayTimer++;
+            delayTimer--;
         }
     }
 
@@ -464,7 +469,7 @@ public class Chip8 {
     private void vxToDelay(char opc) {
         // System.out.println("VX=DELAY - 0x" + Integer.toHexString(opc));
 
-        v[(opc & 0x0F00) >> 8] = delayTimer;
+        v[(opc & 0x0F00) >> 8] = (char) delayTimer;
         programCounter += 2;
     }
 
@@ -484,17 +489,18 @@ public class Chip8 {
 
     // FX15
     private void setDelayTimer(char opc) {
-        // System.out.println("SET DELAY - 0x" + Integer.toHexString(opc));
+        // System.out.println("SET DELAY TIMER - 0x" + Integer.toHexString(opc));
 
-        delayTimer = (char) ((opc & 0x0F00) >> 8);
+        delayTimer = v[(opc & 0x0F00) >> 8];
         programCounter += 2;
     }
 
     // FX18
     private void setSoundTimer(char opc) {
-        // System.out.println("SET TIMER - 0x" + Integer.toHexString(opc));
+        // System.out.println("SET SOUND TIMER - 0x" + Integer.toHexString(opc));
 
-        soundTimer = (char) ((opc & 0x0F00) >> 8);
+        beep = true;
+        soundTimer = v[(opc & 0x0F00) >> 8];
         programCounter += 2;
     }
 

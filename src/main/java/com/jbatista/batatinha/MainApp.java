@@ -201,6 +201,7 @@ public class MainApp extends Application {
         stage.setOnCloseRequest((event) -> {
             executor.shutdownNow();
         });
+        stage.setResizable(false);
         stage.show();
     }
 
