@@ -12,7 +12,6 @@ public class Display {
 
     private final WritableImage image;
     private final PixelWriter writer;
-    private final char[] v;
     private final char[] buffer = new char[2048];
     private final List<Character> sprite = new ArrayList<>();
     private char collision;
@@ -20,8 +19,7 @@ public class Display {
     private int imgY;
     private int scale;
 
-    public Display(char[] v, int scale) {
-        this.v = v;
+    public Display(int scale) {
         this.scale = scale;
 
         image = new WritableImage(64 * scale, 32 * scale);
@@ -30,16 +28,16 @@ public class Display {
         clear();
     }
 
-    public char draw(int vx, int vy) {
+    public char draw(int x, int y) {
         collision = 0;
 
         for (int py = 0; py < sprite.size(); py++) {
             for (int px = 0; px < 8; px++) {
                 if ((sprite.get(py) & (0x80 >> px)) != 0) {
-                    if (buffer[(v[vx] + px + ((v[vy] + py) * 64))] == 1) {
+                    if (buffer[(x + px + ((y + py) * 64))] == 1) {
                         collision = 1;
                     }
-                    buffer[v[vx] + px + ((v[vy] + py) * 64)] ^= 1;
+                    buffer[x + px + ((y + py) * 64)] ^= 1;
                 }
             }
         }
