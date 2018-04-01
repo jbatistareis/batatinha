@@ -5,33 +5,33 @@ import java.util.Set;
 
 public class Input {
 
-    private boolean pressRegistred;
-    private char lastKey;
-    private final Set<Character> pressedKeys = new HashSet<>(16);
+    private static boolean pressRegistred;
+    private static char lastKey;
+    private static final Set<Character> pressedKeys = new HashSet<>(16);
 
-    public void toggleKey(Character key) {
-        if (!pressedKeys.contains(key)) {
-            pressedKeys.add(key);
+    public static void toggleKey(int key) {
+        if (!pressedKeys.contains((char) key)) {
+            pressedKeys.add((char) key);
             pressRegistred = true;
-            lastKey = key;
+            lastKey = (char) key;
         } else {
-            pressedKeys.remove(key);
+            pressedKeys.remove((char) key);
         }
     }
 
-    public boolean isPressed(Character key) {
+    public static boolean isPressed(Character key) {
         return pressedKeys.contains(key);
     }
 
-    public boolean pressRegistred() {
+    public static boolean pressRegistred() {
         return pressRegistred;
     }
 
-    public char getLastKey() {
+    public static char getLastKey() {
         return lastKey;
     }
 
-    public void resetPressResgister() {
+    public static void resetPressResgister() {
         pressRegistred = false;
     }
 

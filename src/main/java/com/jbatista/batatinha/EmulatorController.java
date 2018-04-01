@@ -58,7 +58,7 @@ public class EmulatorController implements Initializable {
     private Button btnF;
     // </ editor-fold>
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "TANK");
+    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
     private Chip8 chip8;
 
     private final AnimationTimer animationTimer;
@@ -82,114 +82,114 @@ public class EmulatorController implements Initializable {
         // <editor-fold defaultstate="collapsed" desc="button listeners, double click to expand (Netbeans)">
         btn0.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(0);
+                MainApp.input.toggleKey(0);
             } else {
-                chip8.toggleKey(0);
+                MainApp.input.toggleKey(0);
             }
         });
         btn1.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(1);
+                MainApp.input.toggleKey(1);
             } else {
-                chip8.toggleKey(1);
+                MainApp.input.toggleKey(1);
             }
         });
         btn2.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(2);
+                MainApp.input.toggleKey(2);
             } else {
-                chip8.toggleKey(2);
+                MainApp.input.toggleKey(2);
             }
         });
         btn3.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(3);
+                MainApp.input.toggleKey(3);
             } else {
-                chip8.toggleKey(3);
+                MainApp.input.toggleKey(3);
             }
         });
         btn4.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(4);
+                MainApp.input.toggleKey(4);
             } else {
-                chip8.toggleKey(4);
+                MainApp.input.toggleKey(4);
             }
         });
         btn5.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(5);
+                MainApp.input.toggleKey(5);
             } else {
-                chip8.toggleKey(5);
+                MainApp.input.toggleKey(5);
             }
         });
         btn6.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(6);
+                MainApp.input.toggleKey(6);
             } else {
-                chip8.toggleKey(6);
+                MainApp.input.toggleKey(6);
             }
         });
         btn7.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(7);
+                MainApp.input.toggleKey(7);
             } else {
-                chip8.toggleKey(7);
+                MainApp.input.toggleKey(7);
             }
         });
         btn8.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(8);
+                MainApp.input.toggleKey(8);
             } else {
-                chip8.toggleKey(8);
+                MainApp.input.toggleKey(8);
             }
         });
         btn9.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(9);
+                MainApp.input.toggleKey(9);
             } else {
-                chip8.toggleKey(9);
+                MainApp.input.toggleKey(9);
             }
         });
         btnA.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(10);
+                MainApp.input.toggleKey(10);
             } else {
-                chip8.toggleKey(10);
+                MainApp.input.toggleKey(10);
             }
         });
         btnB.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(11);
+                MainApp.input.toggleKey(11);
             } else {
-                chip8.toggleKey(1);
+                MainApp.input.toggleKey(1);
             }
         });
         btnC.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(12);
+                MainApp.input.toggleKey(12);
             } else {
-                chip8.toggleKey(12);
+                MainApp.input.toggleKey(12);
             }
         });
         btnD.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(13);
+                MainApp.input.toggleKey(13);
             } else {
-                chip8.toggleKey(13);
+                MainApp.input.toggleKey(13);
             }
         });
         btnE.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(14);
+                MainApp.input.toggleKey(14);
             } else {
-                chip8.toggleKey(14);
+                MainApp.input.toggleKey(14);
             }
         });
         btnF.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                chip8.toggleKey(15);
+                MainApp.input.toggleKey(15);
             } else {
-                chip8.toggleKey(15);
+                MainApp.input.toggleKey(15);
             }
         });
         // </ editor-fold>

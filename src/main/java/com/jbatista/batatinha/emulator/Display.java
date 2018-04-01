@@ -17,6 +17,9 @@ public class Display {
     private char collision;
     private int imgX;
     private int imgY;
+    private int xPos;
+    private int yPos;
+    private int pixel;
     private int scale;
 
     public Display(int scale) {
@@ -32,12 +35,15 @@ public class Display {
         collision = 0;
 
         for (int py = 0; py < sprite.size(); py++) {
+            yPos = ((yPos = y + py) > 31) ? (yPos - 31) : yPos;
             for (int px = 0; px < 8; px++) {
+                xPos = ((xPos = x + px) > 63) ? (xPos - 63) : xPos;
                 if ((sprite.get(py) & (0x80 >> px)) != 0) {
-                    if (buffer[(x + px + ((y + py) * 64))] == 1) {
+                    pixel = xPos + (yPos * 64);
+                    if (buffer[pixel] == 1) {
                         collision = 1;
                     }
-                    buffer[x + px + ((y + py) * 64)] ^= 1;
+                    buffer[pixel] ^= 1;
                 }
             }
         }
