@@ -61,7 +61,6 @@ public class Chip8 {
     private boolean beep;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
-    private char tempResult;
 
     public Chip8(short cpuSpeed, File program, int scale) {
         this.program = program;

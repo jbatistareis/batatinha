@@ -61,7 +61,7 @@
       <ToolBar BorderPane.alignment="CENTER">
         <items>
           <Button mnemonicParsing="false" onAction="#startVM" text="Load" textAlignment="CENTER" />
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="About" textAlignment="CENTER" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#about" text="About" textAlignment="CENTER" />
             <HBox alignment="CENTER" spacing="5.0">
                <children>
                   <Label text="CPU speed:" />

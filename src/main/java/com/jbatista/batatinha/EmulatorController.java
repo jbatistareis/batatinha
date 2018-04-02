@@ -9,10 +9,14 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 
 public class EmulatorController implements Initializable {
 
@@ -58,7 +62,7 @@ public class EmulatorController implements Initializable {
     private Button btnF;
     // </ editor-fold>
 
-    private File program = new File("D:\\Users\\joao\\Desktop", "BREAKOUT");
+    private File program;
     private Chip8 chip8;
 
     private final AnimationTimer animationTimer;
@@ -197,13 +201,30 @@ public class EmulatorController implements Initializable {
 
     @FXML
     private void startVM(ActionEvent event) throws Exception {
-        animationTimer.stop();
-        if (chip8 != null) {
-            chip8.shutdown();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open ROM");
+        program = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+
+        if (program != null) {
+            animationTimer.stop();
+            if (chip8 != null) {
+                chip8.shutdown();
+            }
+            chip8 = new Chip8((short) slCPUSpeed.valueProperty().get(), program, 7);
+            animationTimer.start();
+            chip8.start();
         }
-        chip8 = new Chip8((short) slCPUSpeed.valueProperty().get(), program, 7);
-        animationTimer.start();
-        chip8.start();
+    }
+
+    @FXML
+    private void about(ActionEvent event) throws Exception {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("About");
+        dialog.setHeaderText("Batatinha, a Chip-8 emulator written in Java");
+        dialog.setContentText("2018, github.com/jbatistareis");
+        //dialog.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(""))));
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.showAndWait();
     }
 
 }
