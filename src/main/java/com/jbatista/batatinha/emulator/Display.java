@@ -12,6 +12,8 @@ public class Display {
 
     private final WritableImage image;
     private final PixelWriter writer;
+    private final Color backgroundColor;
+    private final Color pixelColor;
     private final char[] buffer = new char[2048];
     private final List<Character> sprite = new ArrayList<>();
     private char collision;
@@ -22,12 +24,12 @@ public class Display {
     private int pixel;
     private int scale;
 
-    public Display(int scale) {
+    public Display(int scale, Color backgroundColor, Color pixelColor) {
         this.scale = scale;
-
-        image = new WritableImage(64 * scale, 32 * scale);
-        writer = image.getPixelWriter();
-
+        this.backgroundColor = backgroundColor;
+        this.pixelColor = pixelColor;
+        this.image = new WritableImage(64 * scale, 32 * scale);
+        this.writer = this.image.getPixelWriter();
         clear();
     }
 
@@ -67,7 +69,7 @@ public class Display {
         for (int i = 0; i < 2048; i++) {
             for (int ix = 0; ix < scale; ix++) {
                 for (int iy = 0; iy < scale; iy++) {
-                    writer.setColor(imgX + ix, imgY + iy, (buffer[i] == 0) ? Color.BLACK : Color.WHITE);
+                    writer.setColor(imgX + ix, imgY + iy, (buffer[i] == 0) ? backgroundColor : pixelColor);
                 }
             }
 

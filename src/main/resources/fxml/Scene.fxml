@@ -2,14 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <BorderPane style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.EmulatorController">
@@ -61,14 +58,8 @@
       <ToolBar BorderPane.alignment="CENTER">
         <items>
           <Button mnemonicParsing="false" onAction="#startVM" text="Load" textAlignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#settings" text="Settings" />
             <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#about" text="About" textAlignment="CENTER" />
-            <HBox alignment="CENTER" spacing="5.0">
-               <children>
-                  <Label text="CPU speed:" />
-                  <Slider fx:id="slCPUSpeed" blockIncrement="100.0" majorTickUnit="100.0" max="1000.0" min="500.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="500.0" />
-                  <Label fx:id="lbCPUSpeed" text="500Hz" />
-               </children>
-            </HBox>
         </items>
          <opaqueInsets>
             <Insets />

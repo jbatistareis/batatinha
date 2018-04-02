@@ -2,19 +2,21 @@ package com.jbatista.batatinha;
 
 import com.jbatista.batatinha.emulator.Chip8;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
@@ -22,10 +24,6 @@ public class EmulatorController implements Initializable {
 
     @FXML
     private ImageView screen;
-    @FXML
-    private Slider slCPUSpeed;
-    @FXML
-    private Label lbCPUSpeed;
 
     // <editor-fold defaultstate="collapsed" desc="buttons, double click to expand (Netbeans)">
     @FXML
@@ -79,10 +77,6 @@ public class EmulatorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        slCPUSpeed.valueProperty().addListener((observable) -> {
-            lbCPUSpeed.setText(decimalFormat.format(slCPUSpeed.valueProperty().get()) + "Hz");
-        });
-
         // <editor-fold defaultstate="collapsed" desc="button listeners, double click to expand (Netbeans)">
         btn0.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -204,16 +198,19 @@ public class EmulatorController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open ROM");
         program = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+        load();
+    }
 
-        if (program != null) {
-            animationTimer.stop();
-            if (chip8 != null) {
-                chip8.shutdown();
-            }
-            chip8 = new Chip8((short) slCPUSpeed.valueProperty().get(), program, 7);
-            animationTimer.start();
-            chip8.start();
-        }
+    @FXML
+    private void settings(ActionEvent event) throws Exception {
+        Dialog<Boolean> dialog = new Dialog<>();
+        dialog.getDialogPane().setContent(FXMLLoader.load(getClass().getResource("/fxml/Settings.fxml")));
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        dialog.setResultConverter((param) -> param.getButtonData().isCancelButton() ? null : true);
+        dialog.showAndWait().ifPresent((t) -> {
+            load();
+        });
     }
 
     @FXML
@@ -222,9 +219,26 @@ public class EmulatorController implements Initializable {
         dialog.setTitle("About");
         dialog.setHeaderText("Batatinha, a Chip-8 emulator written in Java");
         dialog.setContentText("2018, github.com/jbatistareis");
-        //dialog.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(""))));
+        //dialog.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icon.png"))));
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.showAndWait();
+    }
+
+    private void load() {
+        if (program != null) {
+            animationTimer.stop();
+            if (chip8 != null) {
+                chip8.shutdown();
+            }
+            chip8 = new Chip8(program, 7);
+            animationTimer.start();
+
+            try {
+                chip8.start();
+            } catch (IOException ex) {
+                Logger.getLogger(EmulatorController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 }
