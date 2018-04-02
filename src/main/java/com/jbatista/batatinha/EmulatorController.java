@@ -4,7 +4,7 @@ import com.jbatista.batatinha.emulator.Chip8;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.DecimalFormat;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,9 +62,7 @@ public class EmulatorController implements Initializable {
 
     private File program;
     private Chip8 chip8;
-
     private final AnimationTimer animationTimer;
-    private final DecimalFormat decimalFormat = new DecimalFormat("#");
 
     public EmulatorController() {
         animationTimer = new AnimationTimer() {
@@ -205,12 +203,13 @@ public class EmulatorController implements Initializable {
     private void settings(ActionEvent event) throws Exception {
         Dialog<Boolean> dialog = new Dialog<>();
         dialog.getDialogPane().setContent(FXMLLoader.load(getClass().getResource("/fxml/Settings.fxml")));
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        dialog.setResultConverter((param) -> param.getButtonData().isCancelButton() ? null : true);
-        dialog.showAndWait().ifPresent((t) -> {
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
+        dialog.setResultConverter((param) -> !param.getButtonData().isCancelButton());
+
+        final Optional<Boolean> result = dialog.showAndWait();
+        if (result.get()) {
             load();
-        });
+        }
     }
 
     @FXML
@@ -224,7 +223,7 @@ public class EmulatorController implements Initializable {
         dialog.showAndWait();
     }
 
-    private void load() {
+    private void load() throws IOException {
         if (program != null) {
             animationTimer.stop();
             if (chip8 != null) {

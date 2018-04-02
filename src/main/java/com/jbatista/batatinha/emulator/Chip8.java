@@ -56,19 +56,18 @@ public class Chip8 {
     // auxiliary
     private ScheduledFuture timer60Hz;
     private ScheduledFuture timerCPU;
-    private final Settings settings;
     private final Display display;
     private final Buzzer buzzer;
     private boolean beep;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
 
-    public Chip8(File program, int scale) {
-        this.settings = new Settings();
+    public Chip8(File program, int scale) throws IOException {
         this.program = program;
-        this.cpuSpeed = this.settings.getCpuSpeed();
-        this.display = new Display(scale, this.settings.getBackgroud(), this.settings.getPixel());
-        this.buzzer = new Buzzer();
+        MainApp.settings = new Settings().load();
+        cpuSpeed = MainApp.settings.getCpuSpeed();
+        display = new Display(scale);
+        buzzer = new Buzzer();
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
         // debug
@@ -349,7 +348,7 @@ public class Chip8 {
 
     // 8XY5    
     private void subtractVyFromVx(char opc) {
-        // System.out.println("VX-=VY CARRY - 0x" + Integer.toHexString(opc));
+        // System.out.println("VX-=VY - 0x" + Integer.toHexString(opc));
 
         if (v[(opc & 0x0F00) >> 8] > v[(opc & 0x00F0) >> 4]) {
             v[0xF] = 1;

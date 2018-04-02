@@ -1,6 +1,8 @@
 package com.jbatista.batatinha;
 
 import com.jbatista.batatinha.emulator.Input;
+import com.jbatista.batatinha.emulator.Settings;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javafx.application.Application;
@@ -13,7 +15,12 @@ import javafx.stage.Stage;
 public class MainApp extends Application {
 
     public static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    public static Settings settings;
     public static Input input;
+
+    public MainApp() throws IOException {
+        settings = new Settings().load();
+    }
 
     @Override
     public void start(Stage stage) throws Exception {

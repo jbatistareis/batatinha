@@ -1,5 +1,6 @@
 package com.jbatista.batatinha.emulator;
 
+import com.jbatista.batatinha.MainApp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,10 +25,10 @@ public class Display {
     private int pixel;
     private int scale;
 
-    public Display(int scale, Color backgroundColor, Color pixelColor) {
+    public Display(int scale) {
         this.scale = scale;
-        this.backgroundColor = backgroundColor;
-        this.pixelColor = pixelColor;
+        this.backgroundColor = Color.valueOf(MainApp.settings.getBackgroundColor());
+        this.pixelColor = Color.valueOf(MainApp.settings.getPixelColor());
         this.image = new WritableImage(64 * scale, 32 * scale);
         this.writer = this.image.getPixelWriter();
         clear();
