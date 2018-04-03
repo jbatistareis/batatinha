@@ -1,6 +1,7 @@
 package com.jbatista.batatinha.emulator;
 
 import com.jbatista.batatinha.MainApp;
+import com.jbatista.batatinha.emulator.Display.Mode;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class Chip8 {
         this.program = program;
         MainApp.settings = new Settings().load();
         cpuSpeed = MainApp.settings.getCpuSpeed();
-        display = new Display(scale);
+        display = new Display(Mode.CHIP8, scale);
         buzzer = new Buzzer();
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
