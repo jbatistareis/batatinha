@@ -195,6 +195,7 @@ public class EmulatorController implements Initializable {
     private void startVM(ActionEvent event) throws Exception {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open ROM");
+        fileChooser.setInitialDirectory(new File(MainApp.settings.getLastDir()));
         program = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
         load();
     }
@@ -208,6 +209,7 @@ public class EmulatorController implements Initializable {
 
         final Optional<Boolean> result = dialog.showAndWait();
         if (result.get()) {
+            MainApp.settings.save();
             load();
         }
     }
@@ -225,6 +227,9 @@ public class EmulatorController implements Initializable {
 
     private void load() throws IOException {
         if (program != null) {
+            MainApp.settings.setLastDir(program.getParent());
+            MainApp.settings.save();
+
             animationTimer.stop();
             if (chip8 != null) {
                 chip8.shutdown();

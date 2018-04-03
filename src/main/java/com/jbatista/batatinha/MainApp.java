@@ -1,5 +1,7 @@
 package com.jbatista.batatinha;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jbatista.batatinha.emulator.Input;
 import com.jbatista.batatinha.emulator.Settings;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import javafx.stage.Stage;
 public class MainApp extends Application {
 
     public static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    public static final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
     public static Settings settings;
     public static Input input;
 

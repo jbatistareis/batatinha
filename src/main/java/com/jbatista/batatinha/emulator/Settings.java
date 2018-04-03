@@ -1,17 +1,41 @@
 package com.jbatista.batatinha.emulator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jbatista.batatinha.MainApp;
 import java.io.File;
 import java.io.IOException;
 
 public class Settings {
 
-    private final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
-
+    private String lastDir = System.getProperty("user.home");
     private short cpuSpeed = 500;
     private String backgroundColor = "BLACK";
     private String pixelColor = "WHITE";
+
+    public void save() throws IOException {
+        MainApp.objectMapper.writeValue(new File("settings.json"), this);
+    }
+
+    public Settings load() throws IOException {
+        try {
+            final Settings savedSettings = MainApp.objectMapper.readValue(new File("settings.json"), Settings.class);
+            setLastDir(savedSettings.getLastDir());
+            setCpuSpeed(savedSettings.getCpuSpeed());
+            setBackgroudColor(savedSettings.getBackgroundColor());
+            setPixelColor(savedSettings.getPixelColor());
+        } catch (IOException ex) {
+            save();
+        }
+
+        return this;
+    }
+
+    public String getLastDir() {
+        return lastDir;
+    }
+
+    public void setLastDir(String lastDir) {
+        this.lastDir = lastDir;
+    }
 
     public short getCpuSpeed() {
         return cpuSpeed;
@@ -35,23 +59,6 @@ public class Settings {
 
     public void setPixelColor(String pixelColor) {
         this.pixelColor = pixelColor.toUpperCase();
-    }
-
-    public void save() throws IOException {
-        objectMapper.writeValue(new File("settings.json"), this);
-    }
-
-    public Settings load() throws IOException {
-        try {
-            final Settings savedSettings = objectMapper.readValue(new File("settings.json"), Settings.class);
-            setCpuSpeed(savedSettings.getCpuSpeed());
-            setBackgroudColor(savedSettings.getBackgroundColor());
-            setPixelColor(savedSettings.getPixelColor());
-        } catch (IOException ex) {
-            save();
-        }
-
-        return this;
     }
 
 }
