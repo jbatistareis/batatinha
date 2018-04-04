@@ -16,7 +16,7 @@ public class Display {
     private final Color backgroundColor;
     private final Color pixelColor;
     private final List<Character> sprite = new ArrayList<>();
-    private char[] buffer;
+    private final char[] buffer;
     private final char[] tempBuffer;
     private final char[] xLine;
     private final char[] yLine;
@@ -98,7 +98,9 @@ public class Display {
             }
         }
 
-        buffer = tempBuffer.clone();
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = tempBuffer[i];
+        }
     }
 
     public void scrollL4() {
@@ -115,7 +117,9 @@ public class Display {
             }
         }
 
-        buffer = tempBuffer.clone();
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = tempBuffer[i];
+        }
     }
 
     public void scrollDown(int amount) {
@@ -133,7 +137,9 @@ public class Display {
             }
         }
 
-        buffer = tempBuffer.clone();
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = tempBuffer[i];
+        }
     }
 
     // XO-CHIP, unofficial
@@ -152,7 +158,9 @@ public class Display {
             }
         }
 
-        buffer = tempBuffer.clone();
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = tempBuffer[i];
+        }
     }
 
     public void clear() {
