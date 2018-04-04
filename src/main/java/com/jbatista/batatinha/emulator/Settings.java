@@ -1,7 +1,6 @@
 package com.jbatista.batatinha.emulator;
 
 import com.jbatista.batatinha.MainApp;
-import java.io.File;
 import java.io.IOException;
 
 public class Settings {
@@ -12,12 +11,12 @@ public class Settings {
     private String pixelColor = "WHITE";
 
     public void save() throws IOException {
-        MainApp.objectMapper.writeValue(new File("settings.json"), this);
+        MainApp.objectMapper.writeValue(MainApp.settingsFile, this);
     }
 
     public Settings load() throws IOException {
         try {
-            final Settings savedSettings = MainApp.objectMapper.readValue(new File("settings.json"), Settings.class);
+            final Settings savedSettings = MainApp.objectMapper.readValue(MainApp.settingsFile, Settings.class);
             setLastDir(savedSettings.getLastDir());
             setCpuSpeed(savedSettings.getCpuSpeed());
             setBackgroudColor(savedSettings.getBackgroundColor());

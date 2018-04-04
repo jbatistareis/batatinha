@@ -149,14 +149,10 @@ public class Chip8 {
         fileInputStream.close();
 
         // 60Hz timer
-        timer60Hz = MainApp.executor.scheduleWithFixedDelay(() -> {
-            timerTick();
-        }, 16666, 16666, TimeUnit.MICROSECONDS);
+        timer60Hz = MainApp.executor.scheduleWithFixedDelay(this::timerTick, 16666, 16666, TimeUnit.MICROSECONDS);
 
         // CPU timer
-        timerCPU = MainApp.executor.scheduleWithFixedDelay(() -> {
-            cpuTick();
-        }, 1000000 / cpuSpeed, 1000000 / cpuSpeed, TimeUnit.MICROSECONDS);
+        timerCPU = MainApp.executor.scheduleWithFixedDelay(this::cpuTick, 1000000 / cpuSpeed, 1000000 / cpuSpeed, TimeUnit.MICROSECONDS);
     }
 
     public void shutdown() {

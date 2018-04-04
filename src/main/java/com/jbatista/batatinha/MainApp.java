@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jbatista.batatinha.emulator.Input;
 import com.jbatista.batatinha.emulator.Settings;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,8 +17,13 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    public static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    public static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2, (runnable) -> {
+        final Thread thread = new Thread(runnable);
+        thread.setPriority(3);
+        return thread;
+    });
     public static final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
+    public static final File settingsFile = new File("settings.json");
     public static Settings settings;
     public static Input input;
 
