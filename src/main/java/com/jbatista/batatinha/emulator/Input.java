@@ -19,6 +19,20 @@ public class Input {
         }
     }
 
+    public static void press(int key) {
+        if (!pressedKeys.contains((char) key)) {
+            pressedKeys.add((char) key);
+            pressRegistred = true;
+            lastKey = (char) key;
+        }
+    }
+
+    public static void release(int key) {
+        if (pressedKeys.contains((char) key)) {
+            pressedKeys.remove((char) key);
+        }
+    }
+
     public static boolean isPressed(Character key) {
         return pressedKeys.contains(key);
     }

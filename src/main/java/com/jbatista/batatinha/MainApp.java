@@ -40,176 +40,180 @@ public class MainApp extends Application {
 
         scene.setOnKeyPressed((event) -> {
             switch (event.getCode()) {
-                // <editor-fold defaultstate="collapsed" desc="keyboard statements, double click to expand (Netbeans)">
+                // <editor-fold defaultstate="collapsed" desc="keyboard statements, double click to expand (Netbeans)">               
                 case DIGIT1:
-                    MainApp.input.toggleKey(0);
+                    MainApp.input.press(1);
                     break;
                 case DIGIT2:
-                    MainApp.input.toggleKey(1);
+                    MainApp.input.press(2);
                     break;
                 case DIGIT3:
-                    MainApp.input.toggleKey(2);
+                    MainApp.input.press(3);
                     break;
                 case DIGIT4:
-                    MainApp.input.toggleKey(3);
+                    MainApp.input.press(12);
                     break;
                 case Q:
-                    MainApp.input.toggleKey(4);
+                    MainApp.input.press(4);
                     break;
                 case W:
-                    MainApp.input.toggleKey(5);
+                    MainApp.input.press(5);
                     break;
                 case E:
-                    MainApp.input.toggleKey(6);
+                    MainApp.input.press(6);
                     break;
                 case R:
-                    MainApp.input.toggleKey(7);
+                    MainApp.input.press(13);
                     break;
                 case A:
-                    MainApp.input.toggleKey(8);
+                    MainApp.input.press(7);
                     break;
                 case S:
-                    MainApp.input.toggleKey(9);
+                    MainApp.input.press(8);
                     break;
                 case D:
-                    MainApp.input.toggleKey(10);
+                    MainApp.input.press(9);
                     break;
                 case F:
-                    MainApp.input.toggleKey(11);
+                    MainApp.input.press(14);
                     break;
                 case Z:
-                    MainApp.input.toggleKey(12);
+                    MainApp.input.press(10);
                     break;
                 case X:
-                    MainApp.input.toggleKey(13);
+                    MainApp.input.press(0);
                     break;
                 case C:
-                    MainApp.input.toggleKey(14);
+                    MainApp.input.press(11);
                     break;
                 case V:
-                    MainApp.input.toggleKey(15);
+                    MainApp.input.press(15);
                     break;
                 case NUMPAD0:
-                    MainApp.input.toggleKey(0);
+                    MainApp.input.press(0);
                     break;
                 case NUMPAD1:
-                    MainApp.input.toggleKey(1);
+                    MainApp.input.press(1);
                     break;
                 case NUMPAD2:
-                    MainApp.input.toggleKey(2);
+                    MainApp.input.press(2);
                     break;
                 case NUMPAD3:
-                    MainApp.input.toggleKey(3);
+                    MainApp.input.press(3);
                     break;
                 case NUMPAD4:
-                    MainApp.input.toggleKey(4);
+                    MainApp.input.press(4);
                     break;
                 case NUMPAD5:
-                    MainApp.input.toggleKey(5);
+                    MainApp.input.press(5);
                     break;
                 case NUMPAD6:
-                    MainApp.input.toggleKey(6);
+                    MainApp.input.press(6);
                     break;
                 case NUMPAD7:
-                    MainApp.input.toggleKey(7);
+                    MainApp.input.press(7);
                     break;
                 case NUMPAD8:
-                    MainApp.input.toggleKey(8);
+                    MainApp.input.press(8);
                     break;
                 case NUMPAD9:
-                    MainApp.input.toggleKey(9);
+                    MainApp.input.press(9);
                     break;
                 default:
                     break;
                 // </ editor-fold>
-            }
+                }
+
+            event.consume();
         });
 
         scene.setOnKeyReleased((event) -> {
             switch (event.getCode()) {
-                // <editor-fold defaultstate="collapsed" desc="keyboard statements, double click to expand (Netbeans)">
+                // <editor-fold defaultstate="collapsed" desc="keyboard statements, double click to expand (Netbeans)">               
                 case DIGIT1:
-                    MainApp.input.toggleKey(0);
+                    MainApp.input.release(1);
                     break;
                 case DIGIT2:
-                    MainApp.input.toggleKey(1);
+                    MainApp.input.release(2);
                     break;
                 case DIGIT3:
-                    MainApp.input.toggleKey(2);
+                    MainApp.input.release(3);
                     break;
                 case DIGIT4:
-                    MainApp.input.toggleKey(3);
+                    MainApp.input.release(12);
                     break;
                 case Q:
-                    MainApp.input.toggleKey(4);
+                    MainApp.input.release(4);
                     break;
                 case W:
-                    MainApp.input.toggleKey(5);
+                    MainApp.input.release(5);
                     break;
                 case E:
-                    MainApp.input.toggleKey(6);
+                    MainApp.input.release(6);
                     break;
                 case R:
-                    MainApp.input.toggleKey(7);
+                    MainApp.input.release(13);
                     break;
                 case A:
-                    MainApp.input.toggleKey(8);
+                    MainApp.input.release(7);
                     break;
                 case S:
-                    MainApp.input.toggleKey(9);
+                    MainApp.input.release(8);
                     break;
                 case D:
-                    MainApp.input.toggleKey(10);
+                    MainApp.input.release(9);
                     break;
                 case F:
-                    MainApp.input.toggleKey(11);
+                    MainApp.input.release(14);
                     break;
                 case Z:
-                    MainApp.input.toggleKey(12);
+                    MainApp.input.release(10);
                     break;
                 case X:
-                    MainApp.input.toggleKey(13);
+                    MainApp.input.release(0);
                     break;
                 case C:
-                    MainApp.input.toggleKey(14);
+                    MainApp.input.release(11);
                     break;
                 case V:
-                    MainApp.input.toggleKey(15);
+                    MainApp.input.release(15);
                     break;
                 case NUMPAD0:
-                    MainApp.input.toggleKey(0);
+                    MainApp.input.release(0);
                     break;
                 case NUMPAD1:
-                    MainApp.input.toggleKey(1);
+                    MainApp.input.release(1);
                     break;
                 case NUMPAD2:
-                    MainApp.input.toggleKey(2);
+                    MainApp.input.release(2);
                     break;
                 case NUMPAD3:
-                    MainApp.input.toggleKey(3);
+                    MainApp.input.release(3);
                     break;
                 case NUMPAD4:
-                    MainApp.input.toggleKey(4);
+                    MainApp.input.release(4);
                     break;
                 case NUMPAD5:
-                    MainApp.input.toggleKey(5);
+                    MainApp.input.release(5);
                     break;
                 case NUMPAD6:
-                    MainApp.input.toggleKey(6);
+                    MainApp.input.release(6);
                     break;
                 case NUMPAD7:
-                    MainApp.input.toggleKey(7);
+                    MainApp.input.release(7);
                     break;
                 case NUMPAD8:
-                    MainApp.input.toggleKey(8);
+                    MainApp.input.release(8);
                     break;
                 case NUMPAD9:
-                    MainApp.input.toggleKey(9);
+                    MainApp.input.release(9);
                     break;
                 default:
                     break;
                 // </ editor-fold>
-            }
+                }
+
+            event.consume();
         });
 
         stage.setTitle("Batatinha");
