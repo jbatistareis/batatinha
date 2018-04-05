@@ -56,8 +56,8 @@ public class Display {
         tempBuffer = new char[buffer.length];
         xLine = new char[width];
         yLine = new char[height];
-        backgroundColor = Color.valueOf(MainApp.settings.getBackgroundColor());
-        pixelColor = Color.valueOf(MainApp.settings.getPixelColor());
+        backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
+        pixelColor = Color.web(MainApp.settings.getPixelColor());
         image = new WritableImage(width * this.scale, height * this.scale);
         writer = image.getPixelWriter();
         clear();

@@ -203,6 +203,7 @@ public class EmulatorController implements Initializable {
     @FXML
     private void settings(ActionEvent event) throws Exception {
         Dialog<Boolean> dialog = new Dialog<>();
+        dialog.setTitle("Settings");
         dialog.getDialogPane().setContent(FXMLLoader.load(getClass().getResource("/fxml/Settings.fxml")));
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
         dialog.setResultConverter((param) -> !param.getButtonData().isCancelButton());
