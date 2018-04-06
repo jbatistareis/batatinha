@@ -210,8 +210,9 @@ public class EmulatorController implements Initializable {
 
         final Optional<Boolean> result = dialog.showAndWait();
         if (result.get()) {
-            MainApp.settings.save();
-            load();
+            if (MainApp.settings.save()) {
+                load();
+            }
         }
     }
 

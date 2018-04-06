@@ -10,8 +10,9 @@ public class Settings {
     private String backgroundColor = "BLACK";
     private String pixelColor = "WHITE";
 
-    public void save() throws IOException {
+    public boolean save() throws IOException {
         MainApp.objectMapper.writeValue(MainApp.settingsFile, this);
+        return true;
     }
 
     public Settings load() throws IOException {
