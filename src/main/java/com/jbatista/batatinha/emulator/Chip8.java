@@ -204,7 +204,7 @@ public class Chip8 {
     // <editor-fold defaultstate="collapsed" desc="opcode methods, double click to expand (Netbeans)">
     // debug
     private void printOpcode(char arg) {
-        programCounter += 2;
+        System.out.println("0x" + Integer.toHexString(arg).toUpperCase());
     }
 
     private void emptyRegion(char arg) {

@@ -8,6 +8,7 @@ import javax.sound.sampled.LineUnavailableException;
 public class Buzzer {
 
     private final Clip clip;
+    private final AudioFormat audioFormat = new AudioFormat(22050, 8, 1, true, false);
 
     public Buzzer(String note) {
         try {
@@ -15,25 +16,25 @@ public class Buzzer {
 
             switch (note) {
                 case "A":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(440, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(440, 50), 0, 1500);
                     break;
                 case "B":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(493, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(493, 50), 0, 1500);
                     break;
                 case "C":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(523, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(523, 50), 0, 1500);
                     break;
                 case "D":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(587, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(587, 50), 0, 1500);
                     break;
                 case "E":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(659, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(659, 50), 0, 1500);
                     break;
                 case "F":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(698, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(698, 50), 0, 1500);
                     break;
                 case "G":
-                    clip.open(new AudioFormat(22500, 8, 1, true, false), sineWave(783, 2.0, 1000), 0, 1024);
+                    clip.open(audioFormat, sineWave(783, 50), 0, 1500);
                     break;
                 default:
                     new RuntimeException("Sound note '" + note + "' not recognized.");
@@ -48,11 +49,11 @@ public class Buzzer {
         clip.start();
     }
 
-    private byte[] sineWave(int frequency, double amplitude, int durationMs) {
-        final byte[] output = new byte[((durationMs * 44100) / 1000)];
+    private byte[] sineWave(double frequency, double amplitude) {
+        final byte[] output = new byte[44100];
 
         for (int i = 0; i < output.length; i++) {
-            output[i] = (byte) (Math.sin((amplitude * Math.PI * i) / (44100 / frequency)) * 100f);
+            output[i] = (byte) (amplitude * Math.cos(Math.PI * (22050 / frequency) * i));
         }
 
         return output;
