@@ -69,7 +69,7 @@ public class Chip8 {
         MainApp.settings = new Settings().load();
         cpuSpeed = MainApp.settings.getCpuSpeed();
         display = new Display(Mode.CHIP8, scale);
-        buzzer = new Buzzer();
+        buzzer = new Buzzer(MainApp.settings.getNote());
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
         // debug

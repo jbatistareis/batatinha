@@ -14,6 +14,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer;
 
 public class MainApp extends Application {
 
@@ -22,6 +24,7 @@ public class MainApp extends Application {
         thread.setPriority(3);
         return thread;
     });
+
     public static final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
     public static final File settingsFile = new File("settings.json");
     public static Settings settings;

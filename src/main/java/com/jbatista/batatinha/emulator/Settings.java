@@ -9,6 +9,7 @@ public class Settings {
     private short cpuSpeed = 500;
     private String backgroundColor = "BLACK";
     private String pixelColor = "WHITE";
+    private String note = "A";
 
     public boolean save() throws IOException {
         MainApp.objectMapper.writeValue(MainApp.settingsFile, this);
@@ -22,6 +23,7 @@ public class Settings {
             setCpuSpeed(savedSettings.getCpuSpeed());
             setBackgroudColor(savedSettings.getBackgroundColor());
             setPixelColor(savedSettings.getPixelColor());
+            setNote(savedSettings.getNote());
         } catch (IOException ex) {
             save();
         }
@@ -59,6 +61,20 @@ public class Settings {
 
     public void setPixelColor(String pixelColor) {
         this.pixelColor = pixelColor.toUpperCase();
+    }
+
+    /**
+     * @return the note
+     */
+    public String getNote() {
+        return note;
+    }
+
+    /**
+     * @param note the note to set
+     */
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }
