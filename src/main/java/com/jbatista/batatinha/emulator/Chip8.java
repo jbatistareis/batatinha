@@ -360,7 +360,8 @@ public class Chip8 {
 
     // CXNN
     private void rand(char opc) {
-        v[(opc & 0x0F00) >> 8] = (char) (random.nextInt(random.nextInt(255)) & (opc & 0x00FF));
+        System.out.println("RAND - " + (random.nextInt(255) & (opc & 0x00FF)));
+        v[(opc & 0x0F00) >> 8] = (char) (random.nextInt(255) & (opc & 0x00FF));
         programCounter += 2;
     }
 
