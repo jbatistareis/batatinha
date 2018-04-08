@@ -50,10 +50,11 @@ public class Buzzer {
     }
 
     private byte[] sineWave(double frequency, double amplitude) {
-        final byte[] output = new byte[44100];
+        final byte[] output = new byte[1500];
+        final double f = 22050 / frequency;
 
         for (int i = 0; i < output.length; i++) {
-            output[i] = (byte) (amplitude * Math.cos(Math.PI * (22050 / frequency) * i));
+            output[i] = (byte) (amplitude * Math.cos(Math.PI * f * i));
         }
 
         return output;
