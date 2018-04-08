@@ -14,8 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Mixer;
 
 public class MainApp extends Application {
 
