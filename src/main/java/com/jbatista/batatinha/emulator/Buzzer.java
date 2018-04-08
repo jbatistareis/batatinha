@@ -49,9 +49,9 @@ public class Buzzer {
         clip.start();
     }
 
-    private byte[] sineWave(double frequency, double amplitude) {
+    private byte[] sineWave(int frequency, int amplitude) {
         final byte[] output = new byte[1500];
-        final double f = 22050 / frequency;
+        final double f = 22050 / (double) frequency;
 
         for (int i = 0; i < output.length; i++) {
             output[i] = (byte) (amplitude * Math.cos(Math.PI * f * i));
