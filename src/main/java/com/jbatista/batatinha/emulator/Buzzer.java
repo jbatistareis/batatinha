@@ -54,7 +54,7 @@ public class Buzzer {
         final double f = 22050 / (double) frequency;
 
         for (int i = 0; i < output.length; i++) {
-            output[i] = (byte) (amplitude * Math.cos(Math.PI * f * i));
+            output[i] = (byte) (amplitude * Math.cos(f * i));
         }
 
         return output;
