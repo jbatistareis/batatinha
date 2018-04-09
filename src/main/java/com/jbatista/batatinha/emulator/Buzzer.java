@@ -7,6 +7,8 @@ import javax.sound.sampled.LineUnavailableException;
 
 public class Buzzer {
 
+    private final double pi2 = 2 * Math.PI;
+
     private final Clip clip;
     private final AudioFormat audioFormat = new AudioFormat(22050, 8, 1, true, false);
 
@@ -51,13 +53,13 @@ public class Buzzer {
 
     private byte[] sineWave(int frequency, int amplitude) {
         final byte[] output = new byte[1500];
-        final double f = 22050 / (double) frequency;
+        final double f = (22050 / 2) / (double) frequency;
 
         for (int i = 0; i < output.length; i++) {
             if (i > 1449) {
                 amplitude--;
             }
-            output[i] = (byte) (amplitude * Math.sin(f * i));
+            output[i] = (byte) (amplitude * Math.sin(pi2 * f * i));
         }
 
         return output;
