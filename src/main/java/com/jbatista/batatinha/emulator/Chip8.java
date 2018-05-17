@@ -26,6 +26,7 @@ public class Chip8 {
     private final char[] v = new char[16];
     private char i;
     private char programCounter;
+
     // hardcoded font
     private final char[] font = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -76,8 +77,8 @@ public class Chip8 {
         opcodesMap.put((char) 0xF000, this::emptyRegion);
 
         // chip-8 opcodes
-        opcodesMap.put((char) 0x00E0, this::dispClear);
-        opcodesMap.put((char) 0x00EE, this::returnSubRoutine);
+        opcodesMap.put((char) 0xE0, this::dispClear);
+        opcodesMap.put((char) 0xEE, this::returnSubRoutine);
         opcodesMap.put((char) 0x1000, this::goTo);
         opcodesMap.put((char) 0x2000, this::callSubroutine);
         opcodesMap.put((char) 0x3000, this::skipVxEqNN);
@@ -165,12 +166,9 @@ public class Chip8 {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
 
-        // special cases
-        if (opcode == 0xEE) {
-            decodedOpcode = 0x00EE;
-        } else if (opcode == 0xE0) {
-            decodedOpcode = 0x00E0;
-        } else if (decodedOpcode == 0x8000) {
+        // special cases, for instructions that use the last and the last two values
+        // namely 0x8##X, 0xF#XX and 0xE#XX
+        if (decodedOpcode == 0x8000) {
             decodedOpcode = (char) (opcode & 0xF00F);
         } else if ((decodedOpcode == 0xE000) || (decodedOpcode == 0xF000)) {
             decodedOpcode = (char) (opcode & 0xF0FF);
@@ -214,6 +212,8 @@ public class Chip8 {
     // 0000
     private void call(char opc) {
         // not used (?)
+        // calls a routine on the RCA 1802 chip
+        // acording to the internet nobody ever used it
     }
 
     // 00E0
@@ -365,6 +365,7 @@ public class Chip8 {
     }
 
     // DXYN
+    // when superchip is used and N = 0, it loads a 16 x 16 sprite
     private void draw(char opc) {
         for (int index = 0; index < (opc & 0x000F); index++) {
             display.addSpriteData(memory[i + index]);
@@ -436,7 +437,7 @@ public class Chip8 {
     }
 
     // FX33
-    // this was copied, shame on me :( (source: https://github.com/JohnEarnest/Octo )
+    // this was copied, shame on me :( [ source: https://github.com/JohnEarnest/Octo ]
     private void bcd(char opc) {
         memory[i] = (char) ((v[(opc & 0x0F00) >> 8] / 100) % 10);
         memory[i + 1] = (char) ((v[(opc & 0x0F00) >> 8] / 10) % 10);
