@@ -64,6 +64,7 @@ public class Chip8 {
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
     private char tempResult;
+    private int drawN;
 
     public Chip8(File program, int scale) throws IOException {
         this.program = program;
@@ -112,7 +113,17 @@ public class Chip8 {
         opcodesMap.put((char) 0xF055, this::dump);
         opcodesMap.put((char) 0xF065, this::load);
 
-        // TODO superchip opcodes
+        // superchip opcodes
+        opcodesMap.put((char) 0xC0, this::scrollDown);
+        opcodesMap.put((char) 0xFA, this::compat);
+        opcodesMap.put((char) 0xFB, this::scrollRight);
+        opcodesMap.put((char) 0xFC, this::scrollLeft);
+        opcodesMap.put((char) 0xFE, this::loRes);
+        opcodesMap.put((char) 0xFF, this::hiRes);
+        opcodesMap.put((char) 0xF075, this::flagSave);
+        opcodesMap.put((char) 0xF085, this::flagRestore);
+        opcodesMap.put((char) 0xFD, this::terminate);
+        opcodesMap.put((char) 0x10, this::exitWithCode);
         // </editor-fold>
     }
 
@@ -367,11 +378,12 @@ public class Chip8 {
     // DXYN
     // when superchip is used and N = 0, it loads a 16 x 16 sprite
     private void draw(char opc) {
-        for (int index = 0; index < (opc & 0x000F); index++) {
+        drawN = opc & 0x000F;
+        for (int index = 0; index < (drawN == 0 ? 16 : drawN); index++) {
             display.addSpriteData(memory[i + index]);
         }
 
-        v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4]);
+        v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
         programCounter += 2;
     }
 
@@ -460,6 +472,72 @@ public class Chip8 {
         }
         programCounter += 2;
     }
+    
     // TODO superchip opcodes
+    // DXY0 is implemented inside DXYN
+    // 00CX
+    // has to be synced with 60Hz
+    private void scrollDown(char opc){
+        display.scrollDown(opc & 0x000F);
+    }
+    
+    // 00FA
+    // not used?, makes the i register read only
+    private void compat(char opc){
+        // ?, create a flag or something
+    }
+    
+    // 00FB
+    // has to be synced with 60Hz
+    private void scrollRight(char opc){
+        display.scrollR4();
+    }
+    
+    // 00FC
+    // has to be synced with 60Hz
+    private void scrollLeft(char opc){
+        display.scrollL4();
+    }
+    
+    // 00FE
+    private void loRes(char opc){
+        // find out when and how to change this...
+    }
+    
+    // 00FF
+    private void hiRes(char opc){
+        // find out when to and how change this...
+    }
+    
+    // FX75
+    private void flagSave(char opc){
+        // HP48 function, i think nobody knows what it does
+    }
+    
+    // FX85
+    private void flagRestore(char opc){
+        // HP48 function, i think nobody knows what it does
+    }
+    
+    // 00FD
+    // exit 0 is too extreme, just reset the whole thing =^)
+    private void terminate(char opc){
+        start();
+    }
+    
+    // 001X
+    // exit with a code: 0 means normal, 1 means error
+    // since it is not used (?), reset ;)
+    private exitWithCode(char opc){
+        // skeleton, in case i come up with some other idea 
+        final int exitCode = opc & 0x000F;
+        if (exitCode == 0){
+            start();
+        } else if (exitCode == 1) {
+            start();
+        }
+    }
+    
+    
     // </editor-fold>
 }
