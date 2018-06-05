@@ -63,12 +63,12 @@ public class Display {
         clear();
     }
 
-    public char draw(int x, int y) {
+    public char draw(int x, int y, int spriteWidth) {
         collision = 0;
 
         for (int py = 0; py < sprite.size(); py++) {
             yPos = (y + py) % height;
-            for (int px = 0; px < 8; px++) {
+            for (int px = 0; px < spriteWidth; px++) {
                 xPos = (x + px) % width;
                 if ((sprite.get(py) & (0x80 >> px)) != 0) {
                     pixel = xPos + (yPos * width);
