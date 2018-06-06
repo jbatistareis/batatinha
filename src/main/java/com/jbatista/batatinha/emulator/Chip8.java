@@ -416,7 +416,13 @@ public class Chip8 {
             display.addSpriteData(memory[i + index]);
         }
 
-        v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
+         CompletableFuture.supplyAsync(() -> {
+            return display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
+        }, MainApp.executor).thenAccept(collision -> {
+           v[0xF] = collision;
+        });
+
+        // v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
         programCounter += 2;
     }
 
