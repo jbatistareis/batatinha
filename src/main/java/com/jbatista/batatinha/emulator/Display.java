@@ -30,6 +30,9 @@ public class Display {
     private int yPos;
     private int pixel;
     private int scale;
+    
+    private int pyOffset;
+    private int spriteHexComparator;
 
     public enum Mode {
         CHIP8, SCHIP
@@ -69,15 +72,17 @@ public class Display {
 
     public char draw(int x, int y, int spriteWidth) {
         collision = 0;
+        spriteHexComparator = (spriteWidth == 8) ? 0x80 : 0x8000;
 
         for (int py = 0; py < sprite.size(); py++) {
             yPos = (y + py) % height;
+            pyOffset = yPos * width;
             for (int px = 0; px < spriteWidth; px++) {
                 xPos = (x + px) % width;
 
                 // evaluate
-                if ((sprite.get(py) & (0x80 >> px)) != 0) {
-                    pixel = xPos + (yPos * width);
+                if ((sprite.get(py) & (spriteHexComparator >> px)) != 0) {
+                    pixel = xPos + pyOffset;
                     collision |= buffer[pixel];
                     buffer[pixel] ^= 1;
                 }
