@@ -1,7 +1,7 @@
-# Batatinha, a Java Chip-8 Emulator
+# Batatinha, a Java CHIP-8 and Super CHIP Emulator
 I started this project because it was an interesting idea and looked fun, and it really was.
 
-This program reads a chip-8 binary ROM and parses its execution calls like a processor, all 35 codes from original chip-8 are implemented and i plan to implement the remaining SChip codes.
+This program reads a CHIP-8 binary ROM and parses its execution calls like a processor.
 
 + The interface is made with JavaFX
 + The CPU speed is changebe from to 500Hz to 1000Hz

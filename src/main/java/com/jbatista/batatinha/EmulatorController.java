@@ -220,7 +220,7 @@ public class EmulatorController implements Initializable {
     private void about(ActionEvent event) throws Exception {
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("About");
-        dialog.setHeaderText("Batatinha, a Chip-8 emulator written in Java");
+        dialog.setHeaderText("Batatinha, a CHIP-8 and Super CHIP emulator written in Java");
         dialog.setContentText("2018, github.com/jbatistareis");
         //dialog.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icon.png"))));
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
