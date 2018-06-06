@@ -74,11 +74,11 @@ public class Display {
             yPos = (y + py) % height;
             for (int px = 0; px < spriteWidth; px++) {
                 xPos = (x + px) % width;
+
+                // evaluate
                 if ((sprite.get(py) & (0x80 >> px)) != 0) {
                     pixel = xPos + (yPos * width);
-                    if (buffer[pixel] == 1) {
-                        collision = 1;
-                    }
+                    collision |= buffer[pixel];
                     buffer[pixel] ^= 1;
                 }
             }
