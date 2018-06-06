@@ -485,7 +485,7 @@ public class Chip8 {
         programCounter += 2;
     }
 
-    // TODO superchip opcodes
+    // superchip opcodes
     // DXY0 is implemented inside DXYN
     // 00CX
     // has to be synced with 60Hz
@@ -550,7 +550,6 @@ public class Chip8 {
     private void terminate(char opc) {
         try {
             start();
-            programCounter += 2;
         } catch (IOException ex) {
             Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -565,14 +564,12 @@ public class Chip8 {
         if (exitCode == 0) {
             try {
                 start();
-                programCounter += 2;
             } catch (IOException ex) {
                 Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (exitCode == 1) {
             try {
                 start();
-                programCounter += 2;
             } catch (IOException ex) {
                 Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
             }
