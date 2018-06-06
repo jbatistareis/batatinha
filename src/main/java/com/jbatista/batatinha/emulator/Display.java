@@ -5,27 +5,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 public class Display {
 
-    private final WritableImage image;
-    private final PixelWriter writer;
-    private final Color backgroundColor;
-    private final Color pixelColor;
+    private WritableImage image;
+    private Color backgroundColor;
+    private Color pixelColor;
     private final List<Character> sprite = new ArrayList<>();
-    private final char[] buffer;
-    private final char[] tempBuffer;
-    private final char[] xLine;
-    private final char[] yLine;
+    private char[] buffer;
+    private char[] tempBuffer;
+    private char[] xLine;
+    private char[] yLine;
     private char collision;
 
-    private final int reducedWidth;
+    private int reducedWidth;
     private int reducedHeight;
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
     private int imgX;
     private int imgY;
     private int xPos;
@@ -42,15 +40,22 @@ public class Display {
     }
 
     public Display(Mode mode, int scale) {
-        if (mode.equals(Mode.CHIP8)) {
-            width = 64;
-            height = 32;
-        } else {
-            width = 128;
-            height = 64;
+        this.scale = scale;
+        changeDisplayMode(mode);
+    }
+
+    public void changeDisplayMode(Mode mode) {
+        switch (mode) {
+            case CHIP8:
+                width = 64;
+                height = 32;
+                break;
+            case SCHIP:
+                width = 128;
+                height = 64;
+                break;
         }
 
-        this.scale = scale;
         reducedWidth = width - 4;
         buffer = new char[width * height];
         tempBuffer = new char[buffer.length];
@@ -59,7 +64,6 @@ public class Display {
         backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
         pixelColor = Color.web(MainApp.settings.getPixelColor());
         image = new WritableImage(width * this.scale, height * this.scale);
-        writer = image.getPixelWriter();
         clear();
     }
 
@@ -178,7 +182,10 @@ public class Display {
         for (int i = 0; i < buffer.length; i++) {
             for (int ix = 0; ix < scale; ix++) {
                 for (int iy = 0; iy < scale; iy++) {
-                    writer.setColor(imgX + ix, imgY + iy, (buffer[i] == 0) ? backgroundColor : pixelColor);
+                    image.getPixelWriter().setColor(
+                            (int) ((imgX + ix) % image.getWidth()),
+                            (int) ((imgY + iy) % image.getHeight()),
+                            (buffer[i] == 0) ? backgroundColor : pixelColor);
                 }
             }
 

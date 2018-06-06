@@ -180,13 +180,18 @@ public class Chip8 {
         decodedOpcode = (char) (opcode & 0xF000);
 
         // special cases, for instructions that use the last and the last two values
-        // namely 0x00##, 0x8##X, 0xF#XX and 0xE#XX
+        // namely 0x00XX, 0x8##X, 0xF#XX and 0xE#XX
         if (decodedOpcode == 0x8000) {
             decodedOpcode = (char) (opcode & 0xF00F);
         } else if ((decodedOpcode == 0xE000) || (decodedOpcode == 0xF000)) {
             decodedOpcode = (char) (opcode & 0xF0FF);
         } else if (decodedOpcode == 0x0) {
-            decodedOpcode = opcode;
+            // another special case, 0x00C# and 0x001#
+            if (((opcode & 0x00F0) == 0xC0) || ((opcode & 0x00F0) == 0x10)) {
+                decodedOpcode = (char) (opcode & 0x00F0);
+            } else {
+                decodedOpcode = opcode;
+            }
         }
 
         if (opcodesMap.containsKey(decodedOpcode)) {
@@ -483,44 +488,52 @@ public class Chip8 {
     // has to be synced with 60Hz
     private void scrollDown(char opc) {
         display.scrollDown(opc & 0x000F);
+        programCounter += 2;
     }
 
     // 00FA
     // not used?, makes the i register read only
     private void compat(char opc) {
         // ?, create a flag or something
+        programCounter += 2;
     }
 
     // 00FB
     // has to be synced with 60Hz
     private void scrollRight(char opc) {
         display.scrollR4();
+        programCounter += 2;
     }
 
     // 00FC
     // has to be synced with 60Hz
     private void scrollLeft(char opc) {
         display.scrollL4();
+        programCounter += 2;
     }
 
     // 00FE
     private void loRes(char opc) {
-        // find out when and how to change this...
+        display.changeDisplayMode(Mode.CHIP8);
+        programCounter += 2;
     }
 
     // 00FF
     private void hiRes(char opc) {
-        // find out when to and how change this...
+        display.changeDisplayMode(Mode.SCHIP);
+        programCounter += 2;
     }
 
     // FX75
     private void flagSave(char opc) {
         // HP48 function, i think nobody knows what it does
+        programCounter += 2;
     }
 
     // FX85
     private void flagRestore(char opc) {
         // HP48 function, i think nobody knows what it does
+        programCounter += 2;
     }
 
     // 00FD
@@ -528,6 +541,7 @@ public class Chip8 {
     private void terminate(char opc) {
         try {
             start();
+            programCounter += 2;
         } catch (IOException ex) {
             Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -542,12 +556,14 @@ public class Chip8 {
         if (exitCode == 0) {
             try {
                 start();
+                programCounter += 2;
             } catch (IOException ex) {
                 Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (exitCode == 1) {
             try {
                 start();
+                programCounter += 2;
             } catch (IOException ex) {
                 Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
             }
