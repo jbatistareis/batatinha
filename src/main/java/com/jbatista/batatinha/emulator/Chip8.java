@@ -111,22 +111,23 @@ public class Chip8 {
         opcodesMap.put((char) 0xF015, this::setDelayTimer);
         opcodesMap.put((char) 0xF018, this::setSoundTimer);
         opcodesMap.put((char) 0xF01E, this::addsVxToI);
-        opcodesMap.put((char) 0xF029, this::setIToSpriteInVx);
+        opcodesMap.put((char) 0xF029, this::setIToSpriteInVx5bit);
         opcodesMap.put((char) 0xF033, this::bcd);
         opcodesMap.put((char) 0xF055, this::dump);
         opcodesMap.put((char) 0xF065, this::load);
 
         // superchip opcodes
+        opcodesMap.put((char) 0x10, this::exitWithCode);
         opcodesMap.put((char) 0xC0, this::scrollDown);
         opcodesMap.put((char) 0xFA, this::compat);
         opcodesMap.put((char) 0xFB, this::scrollRight);
         opcodesMap.put((char) 0xFC, this::scrollLeft);
+        opcodesMap.put((char) 0xFD, this::terminate);
         opcodesMap.put((char) 0xFE, this::loRes);
         opcodesMap.put((char) 0xFF, this::hiRes);
+        opcodesMap.put((char) 0xF030, this::setIToSpriteInVx10bit);
         opcodesMap.put((char) 0xF075, this::flagSave);
         opcodesMap.put((char) 0xF085, this::flagRestore);
-        opcodesMap.put((char) 0xFD, this::terminate);
-        opcodesMap.put((char) 0x10, this::exitWithCode);
         // </editor-fold>
     }
 
@@ -454,7 +455,7 @@ public class Chip8 {
     }
 
     // FX29
-    private void setIToSpriteInVx(char opc) {
+    private void setIToSpriteInVx5bit(char opc) {
         i = (char) ((v[(opc & 0x0F00) >> 8] * 5));
         programCounter += 2;
     }
@@ -523,6 +524,12 @@ public class Chip8 {
     // 00FF
     private void hiRes(char opc) {
         display.changeDisplayMode(Mode.SCHIP);
+        programCounter += 2;
+    }
+
+    // F030
+    private void setIToSpriteInVx10bit(char opc) {
+        i = (char) ((v[(opc & 0x0F00) >> 8] * 10));
         programCounter += 2;
     }
 
