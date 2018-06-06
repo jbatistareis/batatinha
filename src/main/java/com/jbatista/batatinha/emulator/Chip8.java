@@ -12,6 +12,8 @@ import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.image.Image;
 
 public class Chip8 {
@@ -178,11 +180,13 @@ public class Chip8 {
         decodedOpcode = (char) (opcode & 0xF000);
 
         // special cases, for instructions that use the last and the last two values
-        // namely 0x8##X, 0xF#XX and 0xE#XX
+        // namely 0x00##, 0x8##X, 0xF#XX and 0xE#XX
         if (decodedOpcode == 0x8000) {
             decodedOpcode = (char) (opcode & 0xF00F);
         } else if ((decodedOpcode == 0xE000) || (decodedOpcode == 0xF000)) {
             decodedOpcode = (char) (opcode & 0xF0FF);
+        } else if (decodedOpcode == 0x0) {
+            decodedOpcode = opcode;
         }
 
         if (opcodesMap.containsKey(decodedOpcode)) {
@@ -472,72 +476,83 @@ public class Chip8 {
         }
         programCounter += 2;
     }
-    
+
     // TODO superchip opcodes
     // DXY0 is implemented inside DXYN
     // 00CX
     // has to be synced with 60Hz
-    private void scrollDown(char opc){
+    private void scrollDown(char opc) {
         display.scrollDown(opc & 0x000F);
     }
-    
+
     // 00FA
     // not used?, makes the i register read only
-    private void compat(char opc){
+    private void compat(char opc) {
         // ?, create a flag or something
     }
-    
+
     // 00FB
     // has to be synced with 60Hz
-    private void scrollRight(char opc){
+    private void scrollRight(char opc) {
         display.scrollR4();
     }
-    
+
     // 00FC
     // has to be synced with 60Hz
-    private void scrollLeft(char opc){
+    private void scrollLeft(char opc) {
         display.scrollL4();
     }
-    
+
     // 00FE
-    private void loRes(char opc){
+    private void loRes(char opc) {
         // find out when and how to change this...
     }
-    
+
     // 00FF
-    private void hiRes(char opc){
+    private void hiRes(char opc) {
         // find out when to and how change this...
     }
-    
+
     // FX75
-    private void flagSave(char opc){
+    private void flagSave(char opc) {
         // HP48 function, i think nobody knows what it does
     }
-    
+
     // FX85
-    private void flagRestore(char opc){
+    private void flagRestore(char opc) {
         // HP48 function, i think nobody knows what it does
     }
-    
+
     // 00FD
     // exit 0 is too extreme, just reset the whole thing =^)
-    private void terminate(char opc){
-        start();
+    private void terminate(char opc) {
+        try {
+            start();
+        } catch (IOException ex) {
+            Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
+
     // 001X
     // exit with a code: 0 means normal, 1 means error
     // since it is not used (?), reset ;)
-    private exitWithCode(char opc){
+    private void exitWithCode(char opc) {
         // skeleton, in case i come up with some other idea 
         final int exitCode = opc & 0x000F;
-        if (exitCode == 0){
-            start();
+        if (exitCode == 0) {
+            try {
+                start();
+            } catch (IOException ex) {
+                Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (exitCode == 1) {
-            start();
+            try {
+                start();
+            } catch (IOException ex) {
+                Logger.getLogger(Chip8.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-    
-    
+
     // </editor-fold>
 }
