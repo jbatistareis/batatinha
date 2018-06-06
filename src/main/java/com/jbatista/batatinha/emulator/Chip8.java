@@ -412,8 +412,20 @@ public class Chip8 {
     // if N = 0, it loads a 16 x 16 sprite
     private void draw(char opc) {
         drawN = opc & 0x000F;
+        /*
         for (int index = 0; index < (drawN == 0 ? 16 : drawN); index++) {
             display.addSpriteData(memory[i + index]);
+        }
+        */
+        
+        if(drawN > 0){
+           for (int index = 0; index < drawN; index++) {
+               display.addSpriteData(memory[i + index]);
+           }
+        } else {
+           for (int index = 0; index < 32; index += 2) {
+               display.addSpriteData(memory[i + index] << 8 | memory[i + index + 1]);
+           }
         }
 
          CompletableFuture.supplyAsync(() -> {
