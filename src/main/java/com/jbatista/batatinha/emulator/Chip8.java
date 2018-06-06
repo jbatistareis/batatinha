@@ -65,7 +65,6 @@ public class Chip8 {
     private boolean beep;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
-    private char altDecodedOpcode;
     private char tempResult;
     private int drawN;
 
@@ -182,17 +181,15 @@ public class Chip8 {
         decodedOpcode = (char) (opcode & 0xF000);
 
         // special cases, for instructions that use the last and the last two values
-        // namely 0x00XX, 0x8##X, 0xF#XX and 0xE#XX
+        // namely 0x00XX, 0x00X#, 0x8##X, 0xF#XX and 0xE#XX
         if (decodedOpcode == 0x8000) {
             decodedOpcode = (char) (opcode & 0xF00F);
         } else if ((decodedOpcode == 0xE000) || (decodedOpcode == 0xF000)) {
             decodedOpcode = (char) (opcode & 0xF0FF);
         } else if (decodedOpcode == 0x0) {
             // special case 0x00C# and 0x001#
-            altDecodedOpcode = (char) (opcode & 0x00F0);
-            if ((altDecodedOpcode == 0xC0) || (altDecodedOpcode == 0x10)) {
-                decodedOpcode = altDecodedOpcode;
-            } else {
+            decodedOpcode = (char) (opcode & 0x00F0);
+            if ((decodedOpcode != 0xC0) && (decodedOpcode != 0x10)) {
                 decodedOpcode = opcode;
             }
         }
@@ -388,7 +385,7 @@ public class Chip8 {
     }
 
     // DXYN
-    // when superchip is used and N = 0, it loads a 16 x 16 sprite
+    // if N = 0, it loads a 16 x 16 sprite
     private void draw(char opc) {
         drawN = opc & 0x000F;
         for (int index = 0; index < (drawN == 0 ? 16 : drawN); index++) {
