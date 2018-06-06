@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    public static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2, (runnable) -> {
+    public static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(3, (runnable) -> {
         final Thread thread = new Thread(runnable);
         thread.setPriority(3);
         return thread;
