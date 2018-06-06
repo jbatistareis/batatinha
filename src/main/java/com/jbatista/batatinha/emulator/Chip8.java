@@ -65,6 +65,7 @@ public class Chip8 {
     private boolean beep;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private char decodedOpcode;
+    private char altDecodedOpcode;
     private char tempResult;
     private int drawN;
 
@@ -186,9 +187,10 @@ public class Chip8 {
         } else if ((decodedOpcode == 0xE000) || (decodedOpcode == 0xF000)) {
             decodedOpcode = (char) (opcode & 0xF0FF);
         } else if (decodedOpcode == 0x0) {
-            // another special case, 0x00C# and 0x001#
-            if (((opcode & 0x00F0) == 0xC0) || ((opcode & 0x00F0) == 0x10)) {
-                decodedOpcode = (char) (opcode & 0x00F0);
+            // special case 0x00C# and 0x001#
+            altDecodedOpcode = (char) (opcode & 0x00F0);
+            if ((altDecodedOpcode == 0xC0) || (altDecodedOpcode == 0x10)) {
+                decodedOpcode = altDecodedOpcode;
             } else {
                 decodedOpcode = opcode;
             }
