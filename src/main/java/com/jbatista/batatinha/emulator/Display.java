@@ -10,7 +10,8 @@ import javafx.scene.paint.Color;
 
 public class Display {
 
-    private WritableImage image;
+    // private WritableImage image;
+    private BufferedImage image;
     private Color backgroundColor;
     private Color pixelColor;
     private final List<Character> sprite = new ArrayList<>();
@@ -24,11 +25,12 @@ public class Display {
     private int reducedHeight;
     private int width;
     private int height;
-    private int imgX;
-    private int imgY;
+    // private int imgX;
+    // private int imgY;
     private int xPos;
     private int yPos;
     private int pixel;
+    private int bufferPosition;
     private int scale;
 
     private int pyOffset;
@@ -174,7 +176,17 @@ public class Display {
         sprite.add(data);
     }
 
-    public Image getImage() {
+    public BufferedImage getImage() {
+        bufferPosition = 0;
+
+        for (int iy = 0; iy < image.getHeight(); iy += scale) {
+            for (int ix = 0; ix < image.getWidth(); ix += scale) {
+                image.getGraphics().setColor((buffer[bufferPosition++] == 0) ? backgroundColor : pixelColor);
+                image.getGraphics().drawRect(ix, iy, scale, scale);
+            }
+        }
+    
+        /*
         imgX = 0;
         imgY = 0;
 
@@ -191,6 +203,7 @@ public class Display {
             imgX = (imgX > image.getWidth() - scale - 1) ? 0 : (imgX + scale);
             imgY = (imgY > image.getHeight() - 1) ? 0 : (imgX == 0) ? (imgY + scale) : imgY;
         }
+        */
 
         return image;
     }
