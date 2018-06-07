@@ -38,16 +38,12 @@ public class Display {
         CHIP8, SCHIP
     }
 
-    public enum Direction {
-        UP, DOWN, LEFT, RIGHT
-    }
-
     public Display(Mode mode, int scale) {
         this.scale = scale;
         changeDisplayMode(mode);
     }
 
-    public void changeDisplayMode(Mode mode) {
+    void changeDisplayMode(Mode mode) {
         switch (mode) {
             case CHIP8:
                 width = 64;
@@ -70,7 +66,7 @@ public class Display {
         clear();
     }
 
-    public char draw(int x, int y, int spriteWidth) {
+    char draw(int x, int y, int spriteWidth) {
         collision = 0;
         spriteHexComparator = (spriteWidth == 8) ? 0x80 : 0x8000;
 
@@ -91,7 +87,7 @@ public class Display {
         return collision;
     }
 
-    public void scrollR4() {
+    void scrollR4() {
         Arrays.fill(tempBuffer, (char) 0);
         Arrays.fill(xLine, (char) 0);
 
@@ -110,7 +106,7 @@ public class Display {
         }
     }
 
-    public void scrollL4() {
+    void scrollL4() {
         Arrays.fill(tempBuffer, (char) 0);
         Arrays.fill(xLine, (char) 0);
 
@@ -129,7 +125,7 @@ public class Display {
         }
     }
 
-    public void scrollDown(int amount) {
+    void scrollDown(int amount) {
         reducedHeight = height - amount;
         Arrays.fill(tempBuffer, (char) 0);
         Arrays.fill(yLine, (char) 0);
@@ -150,7 +146,7 @@ public class Display {
     }
 
     // XO-CHIP, unofficial
-    public void scrollUp(int amount) {
+    void scrollUp(int amount) {
         reducedHeight = height - amount;
         Arrays.fill(tempBuffer, (char) 0);
         Arrays.fill(yLine, (char) 0);
@@ -170,11 +166,11 @@ public class Display {
         }
     }
 
-    public void clear() {
+    void clear() {
         Arrays.fill(buffer, (char) 0);
     }
 
-    public void addSpriteData(char data) {
+    void addSpriteData(char data) {
         sprite.add(data);
     }
 
@@ -197,6 +193,14 @@ public class Display {
         }
 
         return image;
+    }
+    
+    public void changeBackgroundColor(Color backgroundColor){
+        this.backgroundColor = newBackgroundColor;
+    }
+    
+    public void changePixelColor(Color pixelColor){
+        this.pixelColor = newPixelColor;
     }
 
 }
