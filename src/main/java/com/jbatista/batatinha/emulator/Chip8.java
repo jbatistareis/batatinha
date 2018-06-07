@@ -200,6 +200,10 @@ public class Chip8 {
         timer60Hz.cancel(true);
         timerCPU.cancel(true);
     }
+    
+    public void changeCPUSpeed(short newSpeed){
+        this.cpuSpeed = newSpeed;
+    }
 
     // 500Hz ~ 1000Hz
     private void cpuTick() {
@@ -241,8 +245,8 @@ public class Chip8 {
         }
     }
 
-    public Image getImage() {
-        return display.getImage();
+    public Display getDisplay() {
+        return this.display;
     }
 
     // <editor-fold defaultstate="collapsed" desc="opcode methods, double click to expand (Netbeans)">
