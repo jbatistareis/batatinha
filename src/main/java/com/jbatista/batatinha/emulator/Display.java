@@ -30,7 +30,7 @@ public class Display {
     private int yPos;
     private int pixel;
     private int scale;
-    
+
     private int pyOffset;
     private int spriteHexComparator;
 
@@ -79,8 +79,6 @@ public class Display {
             pyOffset = yPos * width;
             for (int px = 0; px < spriteWidth; px++) {
                 xPos = (x + px) % width;
-
-                // evaluate
                 if ((sprite.get(py) & (spriteHexComparator >> px)) != 0) {
                     pixel = xPos + pyOffset;
                     collision |= buffer[pixel];
