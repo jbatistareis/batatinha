@@ -82,8 +82,8 @@ public class Chip8 {
     private final ScheduledExecutorService executor;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
     private ScheduledFuture timer60Hz;
-    private ScheduledFuture timerCPU;    
-    private boolean beep;    
+    private ScheduledFuture timerCPU;
+    private boolean beep;
     private char decodedOpcode;
     private char tempResult;
     private int drawN;
@@ -95,6 +95,7 @@ public class Chip8 {
             String note,
             File program) throws IOException {
         this.executor = executor;
+        this.input = input;
         this.program = program;
         this.cpuSpeed = cupSpeed;
         this.display = new Display(Mode.CHIP8);
@@ -120,9 +121,9 @@ public class Chip8 {
         opcodesMap.put((char) 0x8003, this::setVxToVxXorVy);
         opcodesMap.put((char) 0x8004, this::addVxToVyCarry);
         opcodesMap.put((char) 0x8005, this::subtractVyFromVx);
-        opcodesMap.put((char) 0x8006, this::shiftRightVxToVx);
+        opcodesMap.put((char) 0x8006, this::shiftVxRightBy1);
         opcodesMap.put((char) 0x8007, this::subtractVxFromVy);
-        opcodesMap.put((char) 0x800E, this::shiftLeftVyToVx);
+        opcodesMap.put((char) 0x800E, this::shiftVxLeftBy1);
         opcodesMap.put((char) 0x9000, this::skipVxNotEqVy);
         opcodesMap.put((char) 0xA000, this::setI);
         opcodesMap.put((char) 0xB000, this::goToV0);
@@ -378,8 +379,8 @@ public class Chip8 {
     }
 
     // 8XY6
-    private void shiftRightVxToVx(char opc) {
-        v[0xF] = (char) (v[(opc & 0x00F0) >> 4] & 1);
+    private void shiftVxRightBy1(char opc) {
+        v[0xF] = (char) (v[(opc & 0x0F00) >> 8] & 1);
         v[(opc & 0x0F00) >> 8] >>= 1;
         programCounter += 2;
     }
@@ -392,8 +393,8 @@ public class Chip8 {
     }
 
     // 8XYE
-    private void shiftLeftVyToVx(char opc) {
-        v[0xF] = (char) ((v[(opc & 0x00F0) >> 4] >> 7) & 1);
+    private void shiftVxLeftBy1(char opc) {
+        v[0xF] = (char) ((v[(opc & 0x0F00) >> 8] >> 7) & 1);
         v[(opc & 0x0F00) >> 8] <<= 1;
         programCounter += 2;
     }
