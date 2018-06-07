@@ -9,10 +9,10 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane alignment="CENTER" hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.152" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.SettingsController">
+<GridPane alignment="CENTER" hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="179.0" prefWidth="451.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.152" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jbatista.batatinha.SettingsController">
   <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" />
-    <ColumnConstraints hgrow="SOMETIMES" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="170.0" minWidth="3.0" prefWidth="104.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.0" minWidth="223.0" prefWidth="317.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints vgrow="SOMETIMES" />
@@ -22,7 +22,7 @@
   </rowConstraints>
    <children>
       <Label alignment="TOP_CENTER" text="CPU speed:" />
-      <Slider fx:id="sldCpuSpeed" blockIncrement="50.0" majorTickUnit="100.0" max="1000.0" min="500.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="500.0" GridPane.columnIndex="1" />
+      <Slider fx:id="sldCpuSpeed" blockIncrement="250.0" majorTickUnit="250.0" max="3000.0" min="500.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="500.0" GridPane.columnIndex="1" />
       <Label text="Background color:" GridPane.rowIndex="1" />
       <Label text="Pixel color:" GridPane.rowIndex="2" />
       <ColorPicker fx:id="cpickerBackground" GridPane.columnIndex="1" GridPane.rowIndex="1" />
