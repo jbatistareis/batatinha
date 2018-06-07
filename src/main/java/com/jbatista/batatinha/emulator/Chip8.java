@@ -379,7 +379,7 @@ public class Chip8 {
 
     // 8XYE
     private void shiftLeftVyToVx(char opc) {
-        v[0xF] = (char) ((v[(opc & 0x00F0) >> 4] & 0x80) >> 7);
+        v[0xF] = (char) ((v[(opc & 0x00F0) >> 4] >> 7) & 1);
         v[(opc & 0x0F00) >> 8] <<= 1;
         programCounter += 2;
     }
