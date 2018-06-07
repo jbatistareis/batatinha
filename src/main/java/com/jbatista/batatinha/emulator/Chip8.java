@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -190,7 +189,11 @@ public class Chip8 {
         timer60Hz = MainApp.executor.scheduleWithFixedDelay(this::timerTick, 16666, 16666, TimeUnit.MICROSECONDS);
 
         // CPU timer
-        timerCPU = MainApp.executor.scheduleWithFixedDelay(this::cpuTick, 1000000 / cpuSpeed, 1000000 / cpuSpeed, TimeUnit.MICROSECONDS);
+        timerCPU = MainApp.executor.scheduleWithFixedDelay(() -> {
+            for (int i = 0; i < (cpuSpeed * 0.016); i++) {
+                cpuTick();
+            }
+        }, 16666, 16666, TimeUnit.MICROSECONDS);
     }
 
     public void shutdown() {
@@ -427,13 +430,7 @@ public class Chip8 {
             }
         }
 
-        CompletableFuture.supplyAsync(() -> {
-            return display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
-        }, MainApp.executor).thenAccept(collision -> {
-            v[0xF] = collision;
-        });
-
-        // v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
+        v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
         programCounter += 2;
     }
 
