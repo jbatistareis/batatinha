@@ -40,8 +40,7 @@ public class Display {
         CHIP8, SCHIP
     }
 
-    public Display(Mode mode, int scale) {
-        this.scale = scale;
+    public Display(Mode mode) {
         changeDisplayMode(mode);
     }
 
@@ -50,10 +49,12 @@ public class Display {
             case CHIP8:
                 width = 64;
                 height = 32;
+                scale = 6;
                 break;
             case SCHIP:
                 width = 128;
                 height = 64;
+                scale = 3;
                 break;
         }
 
@@ -64,7 +65,7 @@ public class Display {
         yLine = new char[height];
         backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
         pixelColor = Color.web(MainApp.settings.getPixelColor());
-        image = new WritableImage(width * this.scale, height * this.scale);
+        image = new WritableImage(width * scale, height * scale);
         clear();
     }
 
@@ -214,6 +215,10 @@ public class Display {
     
     public void changePixelColor(String pixelColor){
         this.pixelColor = Color.decode(pixelColor);
+    }
+    
+    public void changeScale(int ratio){
+        this.scale *= ratio;
     }
 
 }
