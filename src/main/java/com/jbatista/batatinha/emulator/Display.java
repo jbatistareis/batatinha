@@ -1,12 +1,12 @@
 package com.jbatista.batatinha.emulator;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import com.jbatista.batatinha.MainApp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 public class Display {
 
@@ -209,11 +209,11 @@ public class Display {
     }
     
     public void changeBackgroundColor(String backgroundColor){
-        this.backgroundColor = Color.web(backgroundColor);
+        this.backgroundColor = Color.decode(backgroundColor);
     }
     
     public void changePixelColor(String pixelColor){
-        this.pixelColor = Color.web(pixelColor);
+        this.pixelColor = Color.decode(pixelColor);
     }
 
 }
