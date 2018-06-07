@@ -237,7 +237,7 @@ public class EmulatorController implements Initializable {
             if (chip8 != null) {
                 chip8.shutdown();
             }
-            chip8 = new Chip8(program, 7);
+            chip8 = new Chip8(program);
             animationTimer.start();
 
             try {
