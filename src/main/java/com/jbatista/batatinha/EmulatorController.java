@@ -63,12 +63,13 @@ public class EmulatorController implements Initializable {
     private File program;
     private Chip8 chip8;
     private final AnimationTimer animationTimer;
+    private final WritableImage writableImage = new WritableImage(448, 224);
 
     public EmulatorController() {
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                screen.setImage(chip8.getDisplay().getImage());
+                screen.setImage(SwingFXUtils.toFXImage(chip8.getDisplay().getImage(), writableImage));
             }
         };
     }
