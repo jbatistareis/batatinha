@@ -76,14 +76,14 @@ public class Chip8 {
     private char delayTimer;
 
     // auxiliary
-    private Input input;
-    private ScheduledExecutorService executor;
-    private ScheduledFuture timer60Hz;
-    private ScheduledFuture timerCPU;
+    private final Input input;
     private final Display display;
     private final Buzzer buzzer;
-    private boolean beep;
+    private final ScheduledExecutorService executor;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
+    private ScheduledFuture timer60Hz;
+    private ScheduledFuture timerCPU;    
+    private boolean beep;    
     private char decodedOpcode;
     private char tempResult;
     private int drawN;
