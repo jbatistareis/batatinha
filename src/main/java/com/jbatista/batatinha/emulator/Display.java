@@ -195,12 +195,12 @@ public class Display {
         return image;
     }
     
-    public void changeBackgroundColor(Color backgroundColor){
-        this.backgroundColor = newBackgroundColor;
+    public void changeBackgroundColor(String backgroundColor){
+        this.backgroundColor = Color.web(backgroundColor);
     }
     
-    public void changePixelColor(Color pixelColor){
-        this.pixelColor = newPixelColor;
+    public void changePixelColor(String pixelColor){
+        this.pixelColor = Color.web(pixelColor);
     }
 
 }
