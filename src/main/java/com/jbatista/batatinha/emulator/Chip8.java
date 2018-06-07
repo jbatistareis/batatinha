@@ -1,6 +1,5 @@
 package com.jbatista.batatinha.emulator;
 
-import com.jbatista.batatinha.MainApp;
 import com.jbatista.batatinha.emulator.Display.Mode;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,18 +8,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.image.Image;
 
 public class Chip8 {
 
     private File program;
     private final Random random = new Random();
-    private final short cpuSpeed;
+    private short cpuSpeed;
 
     // CPU, memory, registers, font
     private char opcode;
@@ -77,6 +76,8 @@ public class Chip8 {
     private char delayTimer;
 
     // auxiliary
+    private Input input;
+    private ScheduledExecutorService executor;
     private ScheduledFuture timer60Hz;
     private ScheduledFuture timerCPU;
     private final Display display;
@@ -87,12 +88,17 @@ public class Chip8 {
     private char tempResult;
     private int drawN;
 
-    public Chip8(File program) throws IOException {
+    public Chip8(
+            ScheduledExecutorService executor,
+            Input input,
+            short cupSpeed,
+            String note,
+            File program) throws IOException {
+        this.executor = executor;
         this.program = program;
-        MainApp.settings = new Settings().load();
-        cpuSpeed = MainApp.settings.getCpuSpeed();
-        display = new Display(Mode.CHIP8);
-        buzzer = new Buzzer(MainApp.settings.getNote());
+        this.cpuSpeed = cupSpeed;
+        this.display = new Display(Mode.CHIP8);
+        this.buzzer = new Buzzer(note);
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
         // debug
@@ -186,26 +192,34 @@ public class Chip8 {
         fileInputStream.close();
 
         // 60Hz timer
-        timer60Hz = MainApp.executor.scheduleWithFixedDelay(this::timerTick, 16666, 16666, TimeUnit.MICROSECONDS);
+        timer60Hz = executor.scheduleWithFixedDelay(this::timerTick, 0, 16666, TimeUnit.MICROSECONDS);
 
         // CPU timer
-        timerCPU = MainApp.executor.scheduleWithFixedDelay(() -> {
+        timerCPU = executor.scheduleWithFixedDelay(() -> {
             for (int i = 0; i < (cpuSpeed * 0.016); i++) {
                 cpuTick();
             }
-        }, 16666, 16666, TimeUnit.MICROSECONDS);
+        }, 0, 16666, TimeUnit.MICROSECONDS);
     }
 
     public void shutdown() {
         timer60Hz.cancel(true);
         timerCPU.cancel(true);
     }
-    
-    public void changeCPUSpeed(short newSpeed){
+
+    public void changeCPUSpeed(short newSpeed) {
         this.cpuSpeed = newSpeed;
     }
 
-    // 500Hz ~ 1000Hz
+    public void changeNote(String note) {
+        this.buzzer.setNote(note);
+    }
+
+    public char[] getDisplay() {
+        return this.display.getBuffer();
+    }
+
+    // into main loop
     private void cpuTick() {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
@@ -243,10 +257,6 @@ public class Chip8 {
         if (delayTimer > 0) {
             delayTimer--;
         }
-    }
-
-    public Display getDisplay() {
-        return this.display;
     }
 
     // <editor-fold defaultstate="collapsed" desc="opcode methods, double click to expand (Netbeans)">
@@ -434,7 +444,7 @@ public class Chip8 {
 
     // EX9E
     private void skipVxEqKey(char opc) {
-        if (MainApp.input.isPressed(v[(opc & 0x0F00) >> 8])) {
+        if (input.isPressed(v[(opc & 0x0F00) >> 8])) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -443,7 +453,7 @@ public class Chip8 {
 
     // EXA1
     private void skipVxNotEqKey(char opc) {
-        if (!MainApp.input.isPressed(v[((opc & 0x0F00) >> 8)])) {
+        if (!input.isPressed(v[((opc & 0x0F00) >> 8)])) {
             programCounter += 4;
         } else {
             programCounter += 2;
@@ -458,13 +468,13 @@ public class Chip8 {
 
     // FX0A
     private void waitKey(char opc) {
-        MainApp.input.resetPressResgister();
+        input.resetPressResgister();
 
         // blocks with an infinite loop
-        while (!MainApp.input.pressRegistred()) {
+        while (!input.pressRegistred()) {
         }
 
-        v[(opc & 0x0F00) >> 8] = MainApp.input.getLastKey();
+        v[(opc & 0x0F00) >> 8] = input.getLastKey();
         programCounter += 2;
     }
 

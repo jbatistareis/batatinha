@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -47,13 +47,6 @@
          </BorderPane.margin>
       </GridPane>
    </right>
-   <center>
-      <ImageView fx:id="screen" cache="true" cacheHint="SPEED" depthTest="DISABLE" fitHeight="224.0" fitWidth="448.0" pickOnBounds="true" preserveRatio="true" smooth="false" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="2.5" top="5.0" />
-         </BorderPane.margin>
-      </ImageView>
-   </center>
    <top>
       <ToolBar BorderPane.alignment="CENTER">
         <items>
@@ -66,4 +59,7 @@
          </opaqueInsets>
       </ToolBar>
    </top>
+   <center>
+      <Canvas fx:id="canvas" height="256.0" width="512.0" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>

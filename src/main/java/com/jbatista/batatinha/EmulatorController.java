@@ -14,16 +14,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
 public class EmulatorController implements Initializable {
 
     @FXML
-    private ImageView screen;
+    private Canvas canvas;
 
     // <editor-fold defaultstate="collapsed" desc="buttons, double click to expand (Netbeans)">
     @FXML
@@ -63,19 +64,37 @@ public class EmulatorController implements Initializable {
     private File program;
     private Chip8 chip8;
     private final AnimationTimer animationTimer;
-    private final WritableImage writableImage = new WritableImage(448, 224);
+    private int bufferPosition;
+    private int scale;
+
+    private Color backgroundColor;
+    private Color pixelColor;
 
     public EmulatorController() {
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                screen.setImage(SwingFXUtils.toFXImage(chip8.getDisplay().getImage(), writableImage));
+                bufferPosition = 0;
+                scale = (chip8.getDisplay().length == 2048) ? 8 : 4;
+
+                for (int iy = 0; iy < canvas.getHeight(); iy += scale) {
+                    for (int ix = 0; ix < canvas.getWidth(); ix += scale) {
+                        canvas.getGraphicsContext2D().setFill(
+                                (chip8.getDisplay()[bufferPosition++] == 0)
+                                ? backgroundColor
+                                : pixelColor);
+                        canvas.getGraphicsContext2D().fillRect(ix, iy, scale, scale);
+                    }
+                }
             }
         };
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
+        pixelColor = Color.web(MainApp.settings.getPixelColor());
+
         // <editor-fold defaultstate="collapsed" desc="button listeners, double click to expand (Netbeans)">
         btn0.pressedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -211,9 +230,12 @@ public class EmulatorController implements Initializable {
 
         final Optional<Boolean> result = dialog.showAndWait();
         if (result.get()) {
-            if (MainApp.settings.save()) {
-                load();
-            }
+            backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
+            pixelColor = Color.web(MainApp.settings.getPixelColor());
+            chip8.changeCPUSpeed(MainApp.settings.getCpuSpeed());
+            chip8.changeNote(MainApp.settings.getNote());
+
+            MainApp.settings.save();
         }
     }
 
@@ -237,7 +259,12 @@ public class EmulatorController implements Initializable {
             if (chip8 != null) {
                 chip8.shutdown();
             }
-            chip8 = new Chip8(program);
+            chip8 = new Chip8(
+                    MainApp.executor,
+                    MainApp.input,
+                    MainApp.settings.getCpuSpeed(),
+                    MainApp.settings.getNote(),
+                    program);
             animationTimer.start();
 
             try {

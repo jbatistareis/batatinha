@@ -4,7 +4,7 @@
 
     <groupId>com.jbatista</groupId>
     <artifactId>Batatinha</artifactId>
-    <version>0.19</version>
+    <version>0.20</version>
     <packaging>jar</packaging>
 
     <name>Batatinha</name>

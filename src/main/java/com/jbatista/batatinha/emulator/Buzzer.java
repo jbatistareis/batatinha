@@ -9,14 +9,41 @@ public class Buzzer {
 
     private final double pi2 = 2 * Math.PI;
 
-    private final Clip clip;
-    private final AudioFormat audioFormat = new AudioFormat(22050, 8, 1, true, false);
+    private Clip clip = null;
+    private final AudioFormat audioFormat = new AudioFormat(22050, 16, 2, true, true);
+    private String note;
 
     public Buzzer(String note) {
-        try {
-            this.clip = AudioSystem.getClip();
+        setNote(note);
+    }
 
-            switch (note) {
+    public void beep() {
+        clip.setFramePosition(0);
+        clip.start();
+    }
+
+    private byte[] sineWave(int frequency, int amplitude) {
+        final byte[] output = new byte[1500];
+        final double f = (double) frequency / 22050;
+
+        for (int i = 0; i < output.length; i++) {
+            output[i] = (byte) (((i > 1449) ? --amplitude : amplitude) * Math.sin(pi2 * f * i));
+        }
+
+        return output;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+
+        try {
+            if (clip != null) {
+                clip.close();
+            }
+
+            clip = AudioSystem.getClip();
+
+            switch (this.note) {
                 case "A":
                     clip.open(audioFormat, sineWave(440, 50), 0, 1500);
                     break;
@@ -46,20 +73,8 @@ public class Buzzer {
         }
     }
 
-    public void beep() {
-        clip.setFramePosition(0);
-        clip.start();
-    }
-
-    private byte[] sineWave(int frequency, int amplitude) {
-        final byte[] output = new byte[1500];
-        final double f = (double) frequency / 22050;
-
-        for (int i = 0; i < output.length; i++) {
-            output[i] = (byte) (((i > 1449) ? --amplitude : amplitude) * Math.sin(pi2 * f * i));
-        }
-
-        return output;
+    public String getNote() {
+        return this.note;
     }
 
 }

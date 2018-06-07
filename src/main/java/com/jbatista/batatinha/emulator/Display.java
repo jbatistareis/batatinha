@@ -1,9 +1,5 @@
 package com.jbatista.batatinha.emulator;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import com.jbatista.batatinha.MainApp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,9 +7,9 @@ import java.util.List;
 public class Display {
 
     // private WritableImage image;
-    private BufferedImage image;
-    private Color backgroundColor;
-    private Color pixelColor;
+    // private BufferedImage image;
+    // private Color backgroundColor;
+    // private Color pixelColor;
     private final List<Character> sprite = new ArrayList<>();
     private char[] buffer;
     private char[] tempBuffer;
@@ -30,8 +26,8 @@ public class Display {
     private int xPos;
     private int yPos;
     private int pixel;
-    private int bufferPosition;
-    private int scale;
+    // private int bufferPosition;
+    // private int scale;
 
     private int pyOffset;
     private int spriteHexComparator;
@@ -49,12 +45,12 @@ public class Display {
             case CHIP8:
                 width = 64;
                 height = 32;
-                scale = 6;
+                // scale = 6;
                 break;
             case SCHIP:
                 width = 128;
                 height = 64;
-                scale = 3;
+                // scale = 3;
                 break;
         }
 
@@ -63,9 +59,11 @@ public class Display {
         tempBuffer = new char[buffer.length];
         xLine = new char[width];
         yLine = new char[height];
+        /*
         backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
         pixelColor = Color.web(MainApp.settings.getPixelColor());
         image = new WritableImage(width * scale, height * scale);
+         */
         clear();
     }
 
@@ -177,6 +175,7 @@ public class Display {
         sprite.add(data);
     }
 
+    /*
     public BufferedImage getImage() {
         bufferPosition = 0;
 
@@ -204,21 +203,25 @@ public class Display {
             imgX = (imgX > image.getWidth() - scale - 1) ? 0 : (imgX + scale);
             imgY = (imgY > image.getHeight() - 1) ? 0 : (imgX == 0) ? (imgY + scale) : imgY;
         }
-        */
+        *
 
         return image;
     }
-    
-    public void changeBackgroundColor(String backgroundColor){
+     
+    public void changeBackgroundColor(String backgroundColor) {
         this.backgroundColor = Color.decode(backgroundColor);
     }
-    
-    public void changePixelColor(String pixelColor){
+
+    public void changePixelColor(String pixelColor) {
         this.pixelColor = Color.decode(pixelColor);
     }
-    
-    public void changeScale(int ratio){
+
+    public void changeScale(int ratio) {
         this.scale *= ratio;
+    }
+     */
+    public char[] getBuffer() {
+        return this.buffer;
     }
 
 }
