@@ -87,11 +87,11 @@ public class Chip8 {
     private char tempResult;
     private int drawN;
 
-    public Chip8(File program, int scale) throws IOException {
+    public Chip8(File program) throws IOException {
         this.program = program;
         MainApp.settings = new Settings().load();
         cpuSpeed = MainApp.settings.getCpuSpeed();
-        display = new Display(Mode.CHIP8, scale);
+        display = new Display(Mode.CHIP8);
         buzzer = new Buzzer(MainApp.settings.getNote());
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
