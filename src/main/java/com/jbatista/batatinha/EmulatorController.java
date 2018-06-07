@@ -68,7 +68,7 @@ public class EmulatorController implements Initializable {
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                screen.setImage(chip8.getImage());
+                screen.setImage(chip8.getDisplay().getImage());
             }
         };
     }
