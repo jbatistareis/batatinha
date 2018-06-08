@@ -79,22 +79,17 @@ public class Chip8 {
     private final Input input;
     private final Display display;
     private final Buzzer buzzer;
-    private final ScheduledExecutorService executor;
     private final Map<Character, Consumer<Character>> opcodesMap = new HashMap<>();
-    private ScheduledFuture timer60Hz;
-    private ScheduledFuture timerCPU;
     private boolean beep;
     private char decodedOpcode;
     private char tempResult;
     private int drawN;
 
     public Chip8(
-            ScheduledExecutorService executor,
             Input input,
             short cupSpeed,
             String note,
             File program) throws IOException {
-        this.executor = executor;
         this.input = input;
         this.program = program;
         this.cpuSpeed = cupSpeed;
@@ -157,13 +152,6 @@ public class Chip8 {
     }
 
     public void start() throws IOException {
-        if (timer60Hz != null) {
-            timer60Hz.cancel(true);
-        }
-        if (timerCPU != null) {
-            timerCPU.cancel(true);
-        }
-
         Arrays.fill(v, (char) 0);
         Arrays.fill(stack, (char) 0);
         Arrays.fill(memory, (char) 0);
@@ -191,21 +179,6 @@ public class Chip8 {
             memory[index++ + 512] = (char) data;
         }
         fileInputStream.close();
-
-        // 60Hz timer
-        timer60Hz = executor.scheduleWithFixedDelay(this::timerTick, 0, 16666, TimeUnit.MICROSECONDS);
-
-        // CPU timer
-        timerCPU = executor.scheduleWithFixedDelay(() -> {
-            for (int i = 0; i < (cpuSpeed * 0.016); i++) {
-                cpuTick();
-            }
-        }, 0, 16666, TimeUnit.MICROSECONDS);
-    }
-
-    public void shutdown() {
-        timer60Hz.cancel(true);
-        timerCPU.cancel(true);
     }
 
     public void changeCPUSpeed(short newSpeed) {
@@ -221,7 +194,7 @@ public class Chip8 {
     }
 
     // into main loop
-    private void cpuTick() {
+    public void cpuTick() {
         opcode = (char) (memory[programCounter] << 8 | memory[programCounter + 1]);
         decodedOpcode = (char) (opcode & 0xF000);
 
@@ -247,7 +220,7 @@ public class Chip8 {
     }
 
     // 60Hz
-    private void timerTick() {
+    public void timerTick() {
         if (soundTimer > 0) {
             if ((--soundTimer == 0) && beep) {
                 buzzer.beep();

@@ -74,6 +74,11 @@ public class EmulatorController implements Initializable {
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                chip8.timerTick();
+                for (int i = 0; i < (MainApp.settings.getCpuSpeed() * 0.016); i++) {
+                    chip8.cpuTick();
+                }
+
                 bufferPosition = 0;
                 scale = (chip8.getDisplay().length == 2048) ? 8 : 4;
 
@@ -256,11 +261,7 @@ public class EmulatorController implements Initializable {
             MainApp.settings.save();
 
             animationTimer.stop();
-            if (chip8 != null) {
-                chip8.shutdown();
-            }
             chip8 = new Chip8(
-                    MainApp.executor,
                     MainApp.input,
                     MainApp.settings.getCpuSpeed(),
                     MainApp.settings.getNote(),
