@@ -82,13 +82,17 @@ public class EmulatorController implements Initializable {
                 bufferPosition = 0;
                 scale = (chip8.getDisplay().length == 2048) ? 8 : 4;
 
+                // clear screen
+                canvas.getGraphicsContext2D().setFill(backgroundColor);
+                canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                
+                // draw pixels
+                canvas.getGraphicsContext2D().setFill(pixelColor);
                 for (int iy = 0; iy < canvas.getHeight(); iy += scale) {
                     for (int ix = 0; ix < canvas.getWidth(); ix += scale) {
-                        canvas.getGraphicsContext2D().setFill(
-                                (chip8.getDisplay()[bufferPosition++] == 0)
-                                ? backgroundColor
-                                : pixelColor);
-                        canvas.getGraphicsContext2D().fillRect(ix, iy, scale, scale);
+                        if(chip8.getDisplay()[bufferPosition++] == 1){
+                            canvas.getGraphicsContext2D().fillRect(ix, iy, scale, scale);
+                        }
                     }
                 }
             }
