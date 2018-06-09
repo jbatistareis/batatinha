@@ -24,21 +24,24 @@ public class Display {
     private int pyOffset;
     private int spriteHexComparator;
 
+    private Mode mode = Mode.LOW_RES;
+
     public enum Mode {
-        CHIP8, SCHIP
+        LOW_RES, HIGH_RES
     }
 
-    public Display(Mode mode) {
+    public Display() {
         changeDisplayMode(mode);
     }
 
     void changeDisplayMode(Mode mode) {
-        switch (mode) {
-            case CHIP8:
+        this.mode = mode;
+        switch (this.mode) {
+            case LOW_RES:
                 width = 64;
                 height = 32;
                 break;
-            case SCHIP:
+            case HIGH_RES:
                 width = 128;
                 height = 64;
                 break;
@@ -50,6 +53,10 @@ public class Display {
         xLine = new char[width];
         yLine = new char[height];
         clear();
+    }
+
+    Mode getDisplayMode() {
+        return this.mode;
     }
 
     char draw(int x, int y, int spriteWidth) {

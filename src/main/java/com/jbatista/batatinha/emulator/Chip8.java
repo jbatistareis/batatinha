@@ -8,9 +8,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +16,6 @@ public class Chip8 {
 
     private File program;
     private final Random random = new Random();
-    private short cpuSpeed;
 
     // CPU, memory, registers, font
     private char opcode;
@@ -87,13 +83,11 @@ public class Chip8 {
 
     public Chip8(
             Input input,
-            short cupSpeed,
             String note,
             File program) throws IOException {
         this.input = input;
         this.program = program;
-        this.cpuSpeed = cupSpeed;
-        this.display = new Display(Mode.CHIP8);
+        this.display = new Display();
         this.buzzer = new Buzzer(note);
 
         // <editor-fold defaultstate="collapsed" desc="hardcoded opcode functions, double click to expand (Netbeans)">
@@ -179,10 +173,6 @@ public class Chip8 {
             memory[index++ + 512] = (char) data;
         }
         fileInputStream.close();
-    }
-
-    public void changeCPUSpeed(short newSpeed) {
-        this.cpuSpeed = newSpeed;
     }
 
     public void changeNote(String note) {
@@ -399,20 +389,21 @@ public class Chip8 {
     }
 
     // DXYN
-    // if N = 0, it loads a 16 x 16 sprite
+    // if N = 0, and hi res is active, it loads a 16 x 16 sprite, else is 8 x N
     private void draw(char opc) {
-        drawN = opc & 0x000F;
-        if (drawN > 0) {
-            for (int index = 0; index < drawN; index++) {
-                display.addSpriteData(memory[i + index]);
-            }
-        } else {
+        drawN = (((drawN = opc & 0x000F) == 0) && display.getDisplayMode().equals(Mode.HIGH_RES)) ? 16 : drawN;
+
+        if (display.getDisplayMode().equals(Mode.HIGH_RES) && (drawN == 16)) {
             for (int index = 0; index < 32; index += 2) {
                 display.addSpriteData((char) (memory[i + index] << 8 | memory[i + index + 1]));
             }
+        } else {
+            for (int index = 0; index < drawN; index++) {
+                display.addSpriteData(memory[i + index]);
+            }
         }
 
-        v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 0 ? 16 : 8));
+        v[0xF] = display.draw(v[(opcode & 0x0F00) >> 8], v[(opcode & 0x00F0) >> 4], (drawN == 16 ? 16 : 8));
         programCounter += 2;
     }
 
@@ -534,19 +525,19 @@ public class Chip8 {
 
     // 00FE
     private void loRes(char opc) {
-        display.changeDisplayMode(Mode.CHIP8);
+        display.changeDisplayMode(Mode.LOW_RES);
         programCounter += 2;
     }
 
     // 00FF
     private void hiRes(char opc) {
-        display.changeDisplayMode(Mode.SCHIP);
+        display.changeDisplayMode(Mode.HIGH_RES);
         programCounter += 2;
     }
 
     // F030
     private void setIToSpriteInVx10bit(char opc) {
-        i = (char) ((v[(opc & 0x0F00) >> 8] * 10));
+        i = (char) ((v[(opc & 0x0F00) >> 8] * 10 + chip8Font.length));
         programCounter += 2;
     }
 

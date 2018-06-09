@@ -85,12 +85,12 @@ public class EmulatorController implements Initializable {
                 // clear screen
                 canvas.getGraphicsContext2D().setFill(backgroundColor);
                 canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                
+
                 // draw pixels
                 canvas.getGraphicsContext2D().setFill(pixelColor);
                 for (int iy = 0; iy < canvas.getHeight(); iy += scale) {
                     for (int ix = 0; ix < canvas.getWidth(); ix += scale) {
-                        if(chip8.getDisplay()[bufferPosition++] == 1){
+                        if (chip8.getDisplay()[bufferPosition++] == 1) {
                             canvas.getGraphicsContext2D().fillRect(ix, iy, scale, scale);
                         }
                     }
@@ -241,7 +241,6 @@ public class EmulatorController implements Initializable {
         if (result.get()) {
             backgroundColor = Color.web(MainApp.settings.getBackgroundColor());
             pixelColor = Color.web(MainApp.settings.getPixelColor());
-            chip8.changeCPUSpeed(MainApp.settings.getCpuSpeed());
             chip8.changeNote(MainApp.settings.getNote());
 
             MainApp.settings.save();
@@ -267,7 +266,6 @@ public class EmulatorController implements Initializable {
             animationTimer.stop();
             chip8 = new Chip8(
                     MainApp.input,
-                    MainApp.settings.getCpuSpeed(),
                     MainApp.settings.getNote(),
                     program);
             animationTimer.start();
