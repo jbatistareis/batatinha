@@ -11,11 +11,9 @@ public class Input {
 
     public static void toggleKey(int key) {
         if (!pressedKeys.contains((char) key)) {
-            pressedKeys.add((char) key);
-            pressRegistred = true;
-            lastKey = (char) key;
+            press(key);
         } else {
-            pressedKeys.remove((char) key);
+            release(key);
         }
     }
 
@@ -30,6 +28,7 @@ public class Input {
     public static void release(int key) {
         if (pressedKeys.contains((char) key)) {
             pressedKeys.remove((char) key);
+            pressRegistred = false;
         }
     }
 

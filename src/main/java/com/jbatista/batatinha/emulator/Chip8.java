@@ -433,14 +433,10 @@ public class Chip8 {
 
     // FX0A
     private void waitKey(char opc) {
-        input.resetPressResgister();
-
-        // blocks with an infinite loop
-        while (!input.pressRegistred()) {
+        if (input.pressRegistred()) {
+            v[(opc & 0x0F00) >> 8] = input.getLastKey();
+            programCounter += 2;
         }
-
-        v[(opc & 0x0F00) >> 8] = input.getLastKey();
-        programCounter += 2;
     }
 
     // FX15

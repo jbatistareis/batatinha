@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.jbatista</groupId>
-    <artifactId>Batatinha</artifactId>
-    <version>0.20</version>
+    <artifactId>batatinha</artifactId>
+    <version>0.21</version>
     <packaging>jar</packaging>
 
     <name>Batatinha</name>
