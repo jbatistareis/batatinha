@@ -1,4 +1,6 @@
 # Batatinha, a Java CHIP-8 and Super CHIP Emulator
+***Check out the Android version: [Batatinha v2](https://github.com/jbatistareis/batatinha-v2).**
+
 I started this project because it was an interesting idea and looked fun, and it really was.
 
 This program reads a CHIP-8 binary ROM and parses its execution calls like a processor.
@@ -14,6 +16,3 @@ This program reads a CHIP-8 binary ROM and parses its execution calls like a pro
 7 8 9 E -> A S D F
 A 0 B F -> Z X C V
 ```
-
-
-*It still have some bugs that i pretend to iron out in the short future...*
