@@ -16,3 +16,5 @@ This program reads a CHIP-8 binary ROM and parses its execution calls like a pro
 7 8 9 E -> A S D F
 A 0 B F -> Z X C V
 ```
+
+![Screenshot](https://github.com/jbatistareis/batatinha/blob/master/images/screenshot.jpg)
