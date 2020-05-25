@@ -1,5 +1,5 @@
 # Batatinha, a Java CHIP-8 and Super CHIP Emulator
-***Check out the Android version: [Batatinha v2](https://github.com/jbatistareis/batatinha-v2).**
+## ***This repository wont be used anymore, check out the new one: [Batatinha v2](https://github.com/jbatistareis/batatinha-v2).**
 
 I started this project because it was an interesting idea and looked fun, and it really was.
 
